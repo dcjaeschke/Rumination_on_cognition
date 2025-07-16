@@ -1,0 +1,340 @@
+/* Custom CSS to adjust font size */
+    .jspsych-content {
+            max-width: 75%;
+            /* this is mainly an IE 10-11 fix */
+            text-align: center;
+            margin: auto;
+            font-size: 24px;  
+                line-height: 1.5; /* Adjust the line height as needed */
+                font-family: 'Arial', sans-serif;
+            /* this is for overflowing content */
+            }
+
+    .jspsych-middle {
+        align-items: center;
+        }
+
+    body {
+        font-family: Arial, sans-serif;
+        font-size: 22px; /* Increased font size */
+        margin: 0;
+        padding: 0;
+        height: 100vh; /* Full viewport height */
+        display: flex;
+        justify-content: center; /* Horizontal center */
+        align-items: center;     /* Vertical center */
+        color: #333;
+      }
+
+      .compact-container {
+        max-width: 1000px; /* Adjust maximum width as needed */
+        margin: 0 auto; /* Center the container horizontally */
+        text-align: center; /* Center-align text */
+        padding: 20px; /* Add padding for spacing */
+      }
+
+      .jspsych-btn {
+        font-family: 'Arial', sans-serif;
+        font-size: 24px;
+        padding: 15px 25px;
+        border-radius: 2em;
+        border: none;
+        transition: background-color 0.4s ease-out;
+        background: #4bd51c82;
+        color: black;
+        font-weight: 500;
+        width: 10em;
+        margin-top: 20px; 
+    }
+
+    #logo-holder img {
+      height: 40px;
+      max-width: 40%;
+      position: fixed;
+      top: 10%;
+      right: 5%;
+    }
+    .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow effect */
+        }
+        .likert-scale {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            width: 70%; /* Reduced width for the Likert scale */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .likert-scale label {
+            font-size: 14px;
+        }
+        .likert-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            width: 77%;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 20px;
+        }
+        .navigation {
+            margin-top: 30px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #74b983;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /*misc styling for intervention examples*/
+        blockquote {
+            background: #f9f9f9d4;
+            border-left: 10px solid #ccccccb8;
+            margin: 1.5em 10px;
+            padding: 0.5em 10px;
+            /*quotes: "\201C""\201D""\2018""\2019";*/
+            }
+            blockquote:before {
+            color: #ccc;
+            /*  content: open-quote;*/
+            font-size: 8em;
+            line-height: 0.1em;
+            margin-right: 0.25em;
+            vertical-align: -0.4em;
+            }
+            blockquote p {
+            display: inline;
+            }
+    .container p {
+            font-size: 22px; /* Instruction size */
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 50px;
+            font-size: 16px;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        .progress {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .continue-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #8ac196;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .continue-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .start-button {
+            padding: 12px 24px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .start-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            height: 30px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: rgb(223, 232, 238);
+            width: 0%; /* Progress starts at 0% */
+            transition: width 0.2s;
+        }
+        .finish-button {
+            padding: 12px 24px;
+            font-size: 18px;
+            background-color: #6bba7c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .finish-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .form {
+            font-size: 22px; 
+        }
+
+.vas-container {
+            position: relative;
+            width: 100%;
+            height: 30px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .vas-marker {
+            position: absolute;
+            top: 0;
+            width: 8px; /* Increased width for better visibility */
+            height: 100%;
+            background-color: #336dff; /* Bright orange color */
+            border-radius: 4px; /* Rounded edges */
+            display: none; /* Hide initially until clicked */
+            box-shadow: 0 0 10px #4677f3; /* Add glow effect */
+            transition: transform 0.1s ease; /* Smooth movement effect */
+        }
+
+        .vas-scale {
+            width: 100%;
+            margin: 0 10px;
+            position: relative;
+            height: 40px;
+        }
+        .vas-scale::before {
+            content: ''; 
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: repeating-linear-gradient(to right, transparent, transparent 5%, black 5%, black 6%);
+            z-index: -1;
+        }
+        .vas-labels {
+            font-size: 20px;
+            display: flex;
+            text-align: end;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .vas-label {
+            font-size: 20px;
+        }
+        .vas-labels span:nth-child(1) {
+            text-align: left;}
+        .vas-labels span:nth-child(2) {
+            text-align: center;
+            flex: 1;}
+        .vas-labels span:nth-child(3) {
+            text-align: right;}
+
+        button:disabled {
+            background-color: grey;
+            cursor: not-allowed;
+        }
+
+            #score_div{
+       position:absolute;
+       left: 0;
+       padding: 0;
+       border-radius: 5px;
+       width: 100%;
+       position: fixed;
+       font-size: 18px;
+       font-weight: 800;
+       top: calc(50% - 130px);
+       text-align: center;
+    }
+    .img_inst_con{
+       width: 170px;
+       height: 170px;
+       float: right;
+       margin:0 40px 0 40px;
+    }
+    .img_inst{
+       width: 100%;
+       height: 100%;
+    }
+    .container{
+       text-align: center;
+       max-width: 700px;
+       margin: auto;
+       font-family: arial;
+       position: relative;
+    }
+    ul{
+       font-size: 20px;
+       text-align: left;
+    }
+    p{
+       white-space: pre-wrap;
+    }
+    #feedback_textarea{
+       margin: 30px auto;
+       max-width: 100%;
+       width: 607px;
+       height: 151px;
+       -moz-border-bottom-colors: none;
+       -moz-border-left-colors: none;
+       -moz-border-right-colors: none;
+       -moz-border-top-colors: none;
+       background: none repeat scroll 0 0 rgba(0, 0, 0, 0.07);
+       border-color: -moz-use-text-color #FFFFFF #FFFFFF -moz-use-text-color;
+       border-image: none;
+       border-radius: 6px 6px 6px 6px;
+       border-style: none solid solid none;
+       border-width: medium 1px 1px medium;
+       box-shadow: 0 1px 2px rgb(0 0 0 / 12%) inset;
+       color: #555555;
+       font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+       font-size: 1em;
+       line-height: 1.4em;
+       padding: 5px 8px;
+       transition: background-color 0.2s ease 0s;
+    }
+    #next_button_hide{
+       display:none;
+       visibility:hidden;
+    }
+    .finish_btn{
+       height: 2em;
+       font-family: 'Lato', sans-serif;
+       font-size: 24px;
+       border-radius: 2em;
+       display: flex;
+       justify-content: space-around;
+       align-items: center;
+       border: none;
+       transition: background-color 1s ease-out;
+       background: #4bd51c82;
+       box-shadow: rgb(17 17 26 / 10%) 0px 8px 24px, rgb(17 17 26 / 10%) 0px 16px 56px, rgb(17 17 26 / 10%) 0px 24px 80px;
+       color: black;
+       font-weight: 500;
+       width: 12em;
+       position: absolute;
+       bottom: -4em;
+       transform: translate(-50%, -50%);
+       left: 50%;
+    }

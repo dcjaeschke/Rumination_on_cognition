@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Meta & Title -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>N-back task</title>
+
+    <!-- Core JS & Plugins -->
+    <script src="jatos.js"></script>
+    <script src="./jspsych/jspsych.js"></script>
+    <script src="./jspsych/plugin-html-button-response.js"></script>
+    <script src="./jspsych/plugin-html-keyboard-response.js"></script>
+    <script src="./jspsych/html-vas-response-psyact.js"></script>
+    <script src="https://static.psyact.org/jspsych-7.3.1/plugins/plugin-instructions.js"></script>
+    <script src="./jspsych/plugin-fullscreen.js"></script>
+
+    <!-- jQuery & JATOS UI Helpers -->
+    <script src="https://static.psyact.org/jatos_append/jquery.min.js"></script>
+    <script src="https://static.psyact.org/jatos_append/jquery-ui.min.js"></script>
+    <script src="./assets/append_data_to_jatos.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://static.psyact.org/jatos_append/jquery-ui.css" />
+    <link rel="stylesheet" href="css/jspsych.css" />
+    <link rel="stylesheet" href="css/upstyling.css" />
+  </head>
+
+  <body>
+    <!-- Hidden internet error modal -->
+    <div id="dialog" title="Connection Error" style="display: none;">
+      <p>Your internet connection has dropped.</p>
+      <button id="checkAgain">Check Connection Again</button>
+    </div>
+  </body>
+
+
+<script>
+  // === Initialize jsPsych and configure saving behavior ===
+  var jsPsych = initJsPsych({
+    show_progress_bar: true,
+    auto_update_progress_bar: true,
+    message_progress_bar: 'Your Progress...',
+    on_data_update: function() {
+      let interactionData = jsPsych.data.getInteractionData();
+      const lastTrial = jsPsych.data.get().last(1).values()[0];
+      const interactionLast = interactionData.filter({ trial: lastTrial.trial_index }).values();
+      if (interactionLast) {
+        lastTrial.browser_events = JSON.stringify(interactionLast);
+      }
+    },
+    on_trial_finish: function() {
+      const lastTrialValues = jsPsych.data.get().last(1).values()[0];
+      console.log(lastTrialValues);
+      const trialDataJson = jsPsych.data.get().json({ trial_index: lastTrialValues.trial_index });
+      jatos.submitResultData({ trialData: trialDataJson });
+    },
+    on_close: function() {
+      append_data_to_jatos(jsPsych.data.get().json(), jatos.startNextComponent);
+    },
+    on_finish: function() {
+      append_data_to_jatos(jsPsych.data.get().json(), jatos.startNextComponent);
+    }
+  });
+
+  // =========================
+  // === GLOBAL PARAMETERS ===
+  // =========================
+  var practice_sequence_length = 20;
+  var sequence_per_n = 2;
+  var n_range = [1, 2, 3];
+  var timeline = [];
+  var instr_set, instr_set_n2, instr_set_n3;
+  var n_back_set = ['T', 'G', 'C', 'D', 'B', 'P'];
+  var sequenceP = [];
+  var image;
+  var accuracy = 100;
+  var count = 0;
+
+  // =========================
+  // === INSTRUCTIONS BLOCK ==
+  // =========================
+
+  // FULLSCREEN     
+  //timeline.push({
+    //type: jsPsychFullscreen,
+    //fullscreen_mode: true
+  //});
+  
+  // ALL THE INSTRUCTIONS
+    var instructions_1 = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: '<div class="container instruction">' +
+      '<p>Welcome to the letter game of this study!</p>'+
+      '<p><i>If you need a quick break, now, before starting the practice, would be a good time to take one.</i></p>'+
+      '<p>This letter game is called n-back task and will test your ability to hold and update information, your so called working memory.</p>' +
+      '<img src="./assets/img/brain_game.png" alt="" style="max-width:25%; height:auto;">'+
+      '<p>It is divided into <b>three subparts</b>: the practice sequence, a rating sequence and a second rating sequence.</p>'+
+      '<p>Before each part, everything will be explained to you in more detail!</p>'+
+      '</div>',
+      choices: ["Let's start!"],
+      button_html: '<button class="jspsych-btn">%choice%</button>',
+    }
+
+    // first set of instructiona for D being the match key and K being the no match key
+    var instr_set1 = {
+      type: jsPsychInstructions,
+      pages: [ 
+      '<p><b>Instructions:</b><br><br>You will see a sequence of letters presented one at a time.<br>Your task is to determine if the letter on the screen <br><b>matches</b> the letter that appeared <b>N letters before</b>. <br>The N can be 1, 2 or 3. <br><br>If the letter is a <b>match press the D key</b> as <b>fast</b> as possible. <br>When the letter is <b>not a match press the K key</b> as <b>fast</b> as possible.</p>',
+        '<p>The star will indicate the current N for the round.<br><br><img src="./assets/img/n_example.png" alt="star example image" style="max-width:40%; height:auto;"><br><br>Now, you will get the opportunity to practice the different N-levels.</p>',
+        '<p>For the first practice round your task is to determine if the letter on the screen <br><b> matches</b> the letter that appeared <b>ONE letter before</b>.<br><br><img src="./assets/img/n-1.png" alt="n=1 star image for D match" style="max-width:30%; height:auto;"><br><br>If the letter is a match <b>press the D key</b> as <b>fast</b> as possible.<br>When the letter is <b>not a match press the K key</b> as <b>fast</b> as possible.<br><br>For an example click Next.</p>',
+        '<p>For example, if you saw the sequence  below: <br><img src="./assets/img/1-back-1.png" alt="1-back example image for D match" style="max-width:50%; height:auto;"><br>you would press the D key when the second G and when the second T appeared on the screen. <br>When the letter is not a match you need to press the K key as fast as possible.</p>'         
+      ],
+      key_forward: 'ArrowRight',
+      key_backward: 'ArrowLeft',
+      allow_keys: true,
+      show_clickable_nav: true,
+      button_label_previous: 'Prev',
+      button_label_next: 'Next'
+    }
+  
+    // second set of instructiona for M being the match key and D being the no match key
+    var instr_set1_2 = {
+      type: jsPsychInstructions,
+      pages: [
+        '<p><b>Instructions:</b><br><br>You will see a sequence of letters presented one at a time. <br><br>Your task is to determine if the letter on the screen <br><b>matches</b> the letter that appeared <b>N letters before</b> <br>The N can be 1, 2 or 3. <br><br>If the letter is a <b>match press the K key</b> as <b>fast</b> as possible.<br>When the letter is <b>not a match press the D key</b> as <b>fast</b> as possible.</p>',
+        '<p>The star will indicate the current N for the round.<br><br><img src="./assets/img/n_example.png" alt="star example image" style="max-width:40%; height:auto;"><br><br>Now, you will get the opportunity to practice the different N-levels.</p>',
+        '<p>For the first practice round your task is to determine if the letter on the screen <br><b> matches</b> the letter that appeared <b>ONE letter before</b>.<br><br><img src="./assets/img/n-1.png" alt="n=1 star image for K match" style="max-width:30%; height:auto;"> <br><br>If the letter is a match <b>press the K key</b> as <b>fast</b> as possible.<br>When the letter is <b>not a match press the D key</b> as <b>fast</b> as possible.<br><br>For an example click Next.</p>',
+        '<p>For example, if you saw the sequence  below: <br><img src="./assets/img/1-back-2.png" alt="1-back example image for D match" style="max-width:50%; height:auto;"> <br>you would press the K key when the second G and when the second T appeared on the screen. <br>When the letter is not a match you need to press the D key as fast as possible.</p>',
+      ],
+        key_forward: 'ArrowRight',
+      key_backward: 'ArrowLeft',
+      allow_keys: true,
+      show_clickable_nav: true,
+      button_label_previous: 'Prev',
+      button_label_next: 'Next'
+    }
+    
+    var instr_set_end = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: '<div class="container instruction">' +
+        '<p>Click on the star to start the practice sequence:</p>'+
+         '</div>',
+         choices: ['<img src="./assets/img/n-1.png" alt="1-back example image" style="max-width:90%; height:auto;">'],
+         button_html: '<button class="jspsych-btn-square">%choice%</button>',
+        post_trial_gap: 2000
+    }
+    
+    // instructions for n =2
+    var instr_set_n2_start = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus:
+        '<p>For the second practice round your task is to determine if the letter on the screen</p>' +
+        '<p><span style="font-weight: bold;"> matches</span> the letter that appeared <span style="font-weight: bold;">TWO letters before</span>.</p>'+
+        '<img src="./assets/img/n-2.png" alt="n=2 star image" style="max-width:30%; height:auto;">' +
+        '<p>For an example click continue.</p>',
+        choices: ["Continue"],
+        button_html: '<button class="jspsych-btn">%choice%</button>',
+    }
+
+    var instr_set_n2_1 = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: 
+        '<p>For example, if you saw the sequence  below: </p>'+
+        '<img src="./assets/img/2-back-1.png" alt="2-back example image with D match" style="max-width:50%; height:auto;">' + 
+        '<p>you would press the D key when the second G and when the second T appeared on the screen.</p>'+
+        '<p>When there is not a match you would press the K key as fast as possible.</p>',
+        choices: ["Continue"],
+        button_html: '<button class="jspsych-btn">%choice%</button>',
+    }
+
+    var instr_set_n2_2 = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus:
+        '<p>For example, if you saw the sequence  below: </p>'+
+        '<img src="./assets/img/2-back-2.png" alt="2-back example image with K match" style="max-width:50%; height:auto;">' + 
+        '<p>you would press the K key when the second G and when the second T appeared on the screen.</p>'+
+        '<p>When there is not a match you would press the D key as fast as possible.</p>',
+        choices: ["Continue"],
+        button_html: '<button class="jspsych-btn">%choice%</button>',
+    }
+
+    
+    var instr_set_n2_end = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: '<div class="container instruction">' +
+        '<p>Click on the star to start the practice:</p>'+
+         '</div>',
+         choices: ['<img src="./assets/img/n-2.png" alt="2-back star" style="max-width:90%; height:auto;">'],
+         button_html: '<button class="jspsych-btn-square">%choice%</button>',
+        post_trial_gap: 2000
+    }
+    
+    // n = 3 instructions
+    var instr_set_n3_start = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus:
+        '<p>Now, your task is to determine if the letter on the screen</p>' +
+        '<p><span style="font-weight: bold;"> matches</span> the letter that appeared <span style="font-weight: bold;">THREE letters before</span>.</p>'+
+        '<img src="./assets/img/n-3.png" alt="n=3 star image" style="max-width:30%; height:auto;">' +
+        '<p>For an example click continue.</p>',
+        choices: ["Continue"],
+         button_html: '<button class="jspsych-btn">%choice%</button>'
+    }
+
+    var instr_set_n3_1 = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: [
+        '<p>For example, if you saw the sequence  below: </p>'+
+        '<img src="./assets/img/3-back-1.png" alt="3-back example image" style="max-width:50%; height:auto;">' + 
+        '<p>you would press the D key when the second G and when the second T appeared on the screen.</p>'+
+        '<p>When there is not a match you would press the K key as fast as possible.</p>'
+        ],
+        choices: ["Continue"],
+        button_html: '<button class="jspsych-btn">%choice%</button>'
+    }
+
+    var instr_set_n3_2 = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: [
+        '<p>For example, if you saw the sequence  below: </p>'+
+        '<img src="./assets/img/3-back-2.png" alt="3-back example image" style="max-width:50%; height:auto;">' + 
+        '<p>you would press the K key when the second G and when the second T appeared on the screen.</p>'+
+        '<p>When there is not a match you would press the D key as fast as possible.</p>'
+        ],
+        choices: ["Continue"],
+        button_html: '<button class="jspsych-btn">%choice%</button>'
+    }
+    
+    var instr_set_n3_end = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: '<div class="container instruction">' +
+        '<p>Click on the star to start the practice:</p>'+
+         '</div>',
+         choices: ['<img src="./assets/img/n-3.png" alt="3-back example image" style="max-width:90%; height:auto;">'],
+         button_html: '<button class="jspsych-btn-square">%choice%</button>',
+        post_trial_gap: 2000
+    }
+
+
+    
+
+  // =========================
+  // === FUNCTIONS ===========
+  // =========================
+
+  // SET THE BUTTONS RANDOMLY
+  var button_opt_pre = ["D", "K"]; // the options pre shuffling/randomized order
+  var button_opt; // after the shuffle
+
+  // shuffle the button settings and select the instruction set
+  function button_setting(button_opt_pre) {
+    // Get a random index from the button_opt array
+    button_opt = jsPsych.randomization.shuffle(button_opt_pre);
+    if (button_opt.toString() === button_opt_pre.toString()) {
+      instr_set = [
+        instr_set1
+      ];
+      instr_set_n2 = [
+        instr_set_n2_1
+      ];
+      instr_set_n3 = [
+        instr_set_n3_1
+      ];
+    } else {
+      instr_set = [
+        instr_set1_2
+      ];
+      instr_set_n2 = [
+        instr_set_n2_2
+      ];
+      instr_set_n3 = [
+        instr_set_n3_2
+      ];
+    } 
+    console.log("buttons for [match, no match]", button_opt);
+    console.log("set version:", instr_set);
+    return button_opt;
+  }
+
+
+// set how_many_back    
+    var how_many_back = n_range[0];
+    var currentIndex = 0;
+    function get_how_may_back(n_range) {
+        currentIndex++;
+        how_many_back = n_range[currentIndex];
+        console.log("how_many_back:", how_many_back)
+        return how_many_back;
+    }
+
+
+
+
+  // =========================
+  // === TRIAL LOGIC =========
+  // =========================
+
+  // Practice trials with immediate feedback 
+  var practice_trial = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: function () {
+      if (sequenceP.length < how_many_back) {
+        var letter = jsPsych.randomization.sampleWithoutReplacement(n_back_set, 1)[0];
+      } else {
+        // Directly access the 'match' property of the last trial data
+        // Evaluates it and shows an according Letter
+        if (jsPsych.timelineVariable('match') == true) {
+          var letter = sequenceP[sequenceP.length - how_many_back];
+        } else {
+          var possible_letters = jsPsych.randomization.sampleWithoutReplacement(n_back_set, 2);
+          if (possible_letters[0] != sequenceP[sequenceP.length - how_many_back]) {
+            var letter = possible_letters[0];
+          } else {
+            var letter = possible_letters[1];
+          }
+        }
+      }
+      sequenceP.push(letter);
+      return '<span style="font-size: 96px;">'+letter+'</span>';
+    },
+    choices: button_opt,
+    trial_duration: 2000, // Total duration of the trial (response time)
+    stimulus_duration: 1000, // Duration for which the stimulus (letter) is visible
+    response_ends_trial: false, // ensures that when 'M' is pressed letter stays visible; would speed up the task according to reaction time
+    post_trial_gap: 0, // how long the gap between letter and letter
+    data: {
+      phase: 'practice',
+      match: jsPsych.timelineVariable('match'),
+    },
+    // Evaluates the response (M or null) and saves it under correct
+    on_finish: function (data) {
+      console.log("how_many_back:", how_many_back)
+      if (count >= practice_sequence_length) {
+          count = 1;
+          sequence = [];
+          how_many_back = get_how_may_back(n_range);
+          console.log('currentDifficulty:', how_many_back);
+          console.log('count', count);
+          } else {
+            count++;
+            console.log('currentDifficulty:', how_many_back);
+            console.log('count', count);
+          }
+      var button0 = button_opt[0].toLowerCase();
+      var button1 = button_opt[1].toLowerCase();
+      if (sequenceP.length > how_many_back) {
+        if (data.match && data.response === button0) {
+          data.evaluation = "hit";
+          data.correct = true;
+        } else if (data.match && data.response !== button0) {
+          data.evaluation = "miss";
+          data.correct = false;
+        } else if (!data.match && data.response === button1) {
+          data.evaluation = "corrRej";
+          data.correct = true;
+        } else if (!data.match && data.response == button0){
+          data.evaluation = "falseAl";
+          data.correct = false;
+        } else {
+          data.evaluation = "no response";
+          data.correct = false;
+        }
+      } else if (sequenceP.length <= how_many_back && data.response === null) {
+          data.correct = true;
+      } else if (sequenceP.length <= how_many_back && data.response === button1) {
+          data.correct = true;
+      } else {
+          data.correct = false;
+      }
+      data.difficulty = how_many_back;
+    }
+  };
+
+// sets up the match value option for each trial
+var practice_trials = [
+  { match: true },
+  { match: false },
+];
+
+// BEFORE combines one practice_trial (letter) and one feedback_trial (feedack!) into one practice sequence --> now, no immediate feedback
+// enables the manipulation of sequence size and percentage of match true or false
+var practice_sequence = {
+  timeline: [practice_trial],
+  timeline_variables: practice_trials,
+  sample: {
+    type: 'with-replacement',
+    size: practice_sequence_length,
+    weights: [1,2],
+  },
+};
+
+// Evaluates the accuracy of the practice_seqeuence and updates the variable accuracy accordingly
+var check_accuracy_trial = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: '<p>Checking accuracy...</p>',
+  trial_duration: 0,  
+  on_finish: function (data) {
+    // Calculate the percentage of correct reactions
+    var practice_trials = jsPsych.data.get().filter({ phase: 'practice' }).last(practice_sequence_length-how_many_back);
+    var correctTrials = practice_trials.filter({correct: true}).count();
+    var falseTrials = practice_trials.filter({correct: false}).count();
+    var allTrials = practice_trials.count();
+ 
+    accuracy = (correctTrials / allTrials) * 100;   
+    console.log("timeline:", timeline)
+    sequenceP = []
+    console.log("accuracy:", accuracy)
+  },
+};
+
+  // =========================
+  // === FEEDBACK BLOCK ======
+  // ========================= 
+
+var feedback = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: function(){
+        var test_trials = jsPsych.data.get().filter({phase: 'practice'}).last(practice_sequence_length-how_many_back);
+        var n_trials = test_trials.count();
+        var n_match = test_trials.filter({match: true}).count();
+        var n_nonmatch = test_trials.filter({match: false}).count();
+        var n_correct = test_trials.filter({correct: true}).count();
+        var hits = test_trials.filter({evaluation: 'hit'}).count();
+        var false_alarms = test_trials.filter({evaluation: 'falseAl'}).count();
+
+        var corrPerc = n_correct/n_trials;
+        var no_response = test_trials.filter({response: null}).count();
+        var noR_Perc = no_response/n_trials;
+        console.log("corrPerc:", corrPerc);
+        console.log("n_correct:", n_correct);
+        console.log("n_trials:", n_trials);
+        console.log("n_match:", n_match);
+
+
+        if (corrPerc >= 0.7) {
+          var html_well_done = "<div style='width:800px;'>"+
+          "<p><b>Well done! </b></p>"+
+          "<p>You correctly identified "+hits+" of the "+n_match+" matching items.</p>"+
+          "<p>You incorrectly identified "+false_alarms+" of the "+n_nonmatch+" non-matching items as matches.</p>"
+          return html_well_done;
+          } else if (noR_Perc > 0.25) { 
+            var html_warning = "<div style='width:800px;'>"+
+            "<p><b>Oops!</b></p>"+
+            "<p>It appears you missed <b>"+no_response+"</b> letters.</p>"+
+            "<p>Please make sure you press match or non-match for every letter. </p>"+
+            "<div>"
+          return html_warning;
+          } else {
+            var html_good_attempt = "<div style='width:800px;'>"+
+          "<p><b>Good attempt!</b></p>"+
+          "<p>You correctly identified "+hits+" of the "+n_match+" matching items.</p>"+
+          "<p>You incorrectly identified "+false_alarms+" of the "+n_nonmatch+" non-matching items as matches.</p>"
+          return html_good_attempt;
+          }
+      },
+      choices: ["Continue!"],
+    };
+
+    // combines the practice_sequence and the accuracy_trial into one block
+    var practice_sequence_block = {
+    timeline: [practice_sequence, check_accuracy_trial, feedback],
+    repetitions: 1,
+    };
+
+    // redo practice sequence instructions 
+    var simple_redo_practice_instructions= {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: 'Since there have been some mistakes in your practice,<br> we will give you the opportunity to practice this N-level again.<br><br>',
+    choices: ["Continue!"],
+    }
+
+    // Indication for the redo practice sequence
+    var indication = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: 'Click on the star to restart the practice.<br><br>',
+      choices: [function get_image() {if (how_many_back == 1) {
+            image = '<img src="./assets/img/n-1.png" alt="n=1 star image" style="max-width:90%; height:auto; display: block; margin: 0 auto;">'
+        } else if (how_many_back == 2) {  
+            image = '<img src="./assets/img/n-2.png" alt="n=2 star image" style="max-width:90%; height:auto; display: block; margin: 0 auto;">'
+        } else if (how_many_back == 3) {  
+            image = '<img src="./assets/img/n-3.png" alt="n=3 star image" style="max-width:90%; height:auto; display: block; margin: 0 auto;">'
+        }
+        return '<span style="font-size: 96px;">'+image+'</span>'}],
+      button_html: '<button class="jspsych-btn-square" style="display: flex; align-items: center; justify-content: center;">%choice%</button>',
+      post_trial_gap: 2500,
+      on_start: function() {
+    }
+    }
+
+    // =========================
+    // === REDO PRACTICE BLOCK =
+    // =========================
+
+
+    // Conditional function to check accuracy and decide whether to redo the practice sequence
+    var if_node = {
+        timeline: [simple_redo_practice_instructions, indication, practice_sequence_block],
+        conditional_function: function(){
+          // Check accuracy 
+          if(accuracy < 70){
+            console.log("accuracy:", accuracy)
+            currentIndex --,
+            sequenceP = []; // Set practice sequence to empty again  
+            return true; // Execute the timeline
+          } else {
+            return false; // Skips the timeline
+          }
+        }
+      }
+
+      var redo_practice_sequence_block = {
+        timeline: [if_node]
+      }
+  
+
+  // =========================
+  // === OUTRO BLOCK =========
+  // =========================
+
+  var outro = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: '<p>Great job completing the practice! <br>Now, let\'s move on to the next section of this experiment.</p>',
+    choices: ["Continue!"],
+    on_finish: function (data) {
+      data.button_opt = button_opt;
+      jatos.studySessionData.button_opt = button_opt;
+    }
+  }
+
+    // =========================
+    // === TIMELINE STRUCTURE ==
+    // =========================
+    
+    // === INITIALIZATION ======
+    // Set the button options and the instruction sets
+    button_setting(button_opt_pre);
+
+
+// *************** N=1 ************************************************
+  // push the instructions
+  timeline.push(instructions_1); // Welcome page
+  instr_set.forEach(function(instruction) {timeline.push(instruction);});
+  timeline.push(instr_set_end); // last instruction page of n=1 (star-page)
+  // push the n-back practice sequences for n=1
+  timeline.push(practice_sequence_block);
+  timeline.push(redo_practice_sequence_block); 
+
+  // **************** N=2 **********************************************
+  // push the instructions
+  timeline.push(instr_set_n2_start); 
+  instr_set_n2.forEach(function(instruction) {timeline.push(instruction);});
+  timeline.push(instr_set_n2_end); 
+  // push the n-back practice sequences for n=2
+  timeline.push(practice_sequence_block);
+  timeline.push(redo_practice_sequence_block);
+
+  // ****** N = 3 ****************************
+  // push the instructions
+  timeline.push(instr_set_n3_start); 
+  instr_set_n3.forEach(function(instruction) {timeline.push(instruction);});
+  timeline.push(instr_set_n3_end); 
+  // push the n-back practice sequences for n=3
+  timeline.push(practice_sequence_block);
+  timeline.push(redo_practice_sequence_block);
+
+  timeline.push(outro);
+
+  // =========================
+  // === TAB CHANGE LOGGING ==
+  // =========================
+
+  // Event listener for page visibility changes
+  document.addEventListener("visibilitychange", function() {
+    var visibilityState = document.visibilityState;
+    console.log('Tab changed:', visibilityState);
+    recordTabChange(visibilityState);
+  });
+
+  // Function to record tab change in JATOS result data
+  function recordTabChange(visibilityState) {
+    var tabChangeData = { tabChange: visibilityState };
+    jatos.appendResultData(tabChangeData);
+    console.log('Tab change recorded:', visibilityState);
+  };
+  
+  // =========================
+  // === RUN EXPERIMENT ======
+  // =========================
+
+  // Save data & load onto jatos 
+  jatos.onLoad(function() { 
+    jsPsych.run(timeline);
+  });
+ 
+  </script>
+</html>
+
+
+
+
+
+
+
+
+
+
+  

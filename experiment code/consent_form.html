@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <script src="jatos.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #fbfbfb;
+    color: #333;
+  }
+
+  .options {
+    display: inline-flex;
+  }
+
+  .question_con {
+    display: block;
+  }
+
+  .option {
+    padding: 30px;
+    border: 1px solid #000;
+    margin: 3px;
+    display: flex;
+  }
+
+  #consent {
+    top: 50px;
+    position: relative;
+  }
+
+  .to_center_btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  #logo-holder {
+    display: flex;
+    justify-content: space-between;
+    /* padding: 0.3em 0.8em 3rem 0.1em; */
+  }
+
+  #logo-holder img {
+    height: 70px;
+  }
+
+  .start-btn button {
+    width: 15rem;
+    height: 2em;
+    font-family: 'Lato', sans-serif;
+    font-size: 24px;
+    border-radius: 2em;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border: none;
+    transition: background-color 1s ease-out;
+    background: rgba(75, 213, 28, 0.43);
+    box-shadow: rgb(17 17 26 / 10%) 0px 8px 24px, rgb(17 17 26 / 10%) 0px 16px 56px, rgb(17 17 26 / 10%) 0px 24px 80px;
+    color: black;
+  }
+
+  .start-btn button:hover {
+    box-shadow: rgb(50 50 93 / 25%) 0px 2px 5px -1px, rgb(0 0 0 / 30%) 0px 1px 3px -1px;
+    background: rgba(75, 213, 28, 0.43);
+    border: none;
+  }
+
+  @media (max-width: 750px) {
+    #logo-holder img {
+      height: 40px;
+    }
+
+    #consent {
+      position: unset !important;
+      top: 0;
+    }
+
+    .start-btn button {
+      width: 15rem;
+      height: 2em;
+      font-family: 'Lato', sans-serif;
+      font-size: 24px;
+      border-radius: 2em;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border: none;
+      transition: background-color 1s ease-out;
+      position: absolute;
+      bottom: -1rem;
+      left: 1rem;
+      right: 1rem;
+      background: rgba(75, 213, 28, 0.43);
+      box-shadow: rgb(17 17 26 / 10%) 0px 8px 24px, rgb(17 17 26 / 10%) 0px 16px 56px, rgb(17 17 26 / 10%) 0px 24px 80px;
+      color: black;
+    }
+
+    .start-btn button:hover {
+      box-shadow: rgb(50 50 93 / 25%) 0px 2px 5px -1px, rgb(0 0 0 / 30%) 0px 1px 3px -1px;
+    }
+  }
+
+  #header {
+    margin: 40px;
+  }
+
+  .card {
+    max-width: 300px;
+  }
+
+  .paragraph {
+    white-space: pre-line;
+    font-size: 22px;
+  }
+
+  #next_button_hide {
+    display: none;
+  }
+
+  .label {
+    white-space: pre-line;
+    display: inline-flex !important;
+    margin-bottom: -19px !important;
+  }
+
+  .cb_container {
+    white-space: nowrap
+  }
+
+  #scroll_gif {
+    width: 154px;
+    position: fixed;
+    right: -36px;
+    top: 44%;
+    display: block;
+  }
+</style>
+<header id="logo-holder"><img src="assets/img/cambridge2.png" alt=""><img src="assets/img/tau1.png" alt=""></header>
+<div class="container">
+  <div id='consent'>
+    <div class="paragraph" style="display: block; visibility: visible;">
+      <h1>Information about this study</h1>
+      <h2><b>What is the purpose of this study?</b></h2>
+      <p>The main purpose of this study is to investigate the effect of motivation on behaviour across the adult lifespan, from young to older adulthood. Specifically, we aim to understand the brain mechanisms of motivation and the decrease in motivation, sometimes termed apathy, which is sometimes observed as we grow older. Recent neuroscience research has begun to shed light on the mechanisms underlying reduced motivation in people. This research has asked, what are the processes leading up to a normal motivated goal-directed action? This study will examine these different processes in order to characterise the specific changes that might happen when we get older. Eventually, our goal is to improve the clinical treatments that are available to improve motivation.</p>
+      <h2><b>Do I have to take part?</b></h2>
+      <p>No. It is up to you to decide whether or not to take part. We will describe the study to you in this information sheet. If you decide to participate, we will ask you to provide informed consent by checking a box next to a series of statements. You are free to withdraw from the study at any time without giving a reason.</p>
+      <span style="color:red"><b>Press DOWN key to continue</b></span>
+    </div>
+    <!--page1-->
+    <div class="paragraph" style="display: none; visibility: hidden;">
+      <h1>Information about this study</h1>
+      <h2><b>What does the procedure involve? What will happen to me if I take part?</b></h2>
+      <p>If you are interested in participating in the study, you will be invited to confirm that you are eligible to take part in the study. If you are eligible and would like to continue, you may automatically begin an online testing session on your computer. We will not save any personally identifiable information (PII). PII is any type of data that can be used to identify a particular person, for example, an exact date of birth or even your IP address. We will only check your IP address before you start the study in order to make sure you have not done this study already. Your IP address will be saved separately from any of the collected data in a general pool of IP addresses of people who have completed this study. It will therefore not be possible to link the IP to your data. All information saved during the experiment is encrypted using SSL.</p>
+      <span style="color:red"><b>Press DOWN key to continue or
+          UP key for the previous page </b></span>
+    </div>
+    <!--page2-->
+    <div class="paragraph" style="display: none; visibility: hidden;">
+      <h1>Information about this study</h1>
+      <h2><b>What are the computer tasks like?</b></h2>
+      <p>These are tasks where you view a computer screen and respond by pressing a button or key on a keyboard.
+        They concern learning and making decisions in response to rewards. There is no “right” or “wrong” answers here, and we will ask you to simply do the best you can during the tasks.</p>
+      <h2><b>What are the possible risks of taking part?</b></h2>
+      <p>There are no risks associated with the questionnaires or computer tasks in this study. However, some people may feel uncomfortable answering questions about their mood or thoughts. The questionnaires on their own cannot diagnose mental health problems, such as depression, but if you score highly, we will recommend seeing your local GP or psychiatrist. Should you have thoughts of harming yourself, please contact your local care team, GP or one of the national helplines, such as Samaritans (116 123 in the UK). More information can be found at: <a href="https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/behaviours/help-for-suicidal-thoughts" target="_blank" rel="noopener noreferrer">https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/behaviours/help-for-suicidal-thoughts.</a>
+        You can also contact the Principal Investigator of the study nwolpe@tau.ac.il.</p>
+      <span style="color:red"><b>Press DOWN key to continue or
+          UP key for the previous page</b></span>
+    </div>
+    <!--page3-->
+    <div class="paragraph" style="display: none; visibility: hidden;">
+      <h1>Consent form</h1>
+      <h2>Study: The effect of motivation on behaviour across the adult lifespan</h2>
+      <p>Version 2, 11 August 2021 Ethics Approval Ref: IRB 0003132-2<br>Title of Study: The effect of motivation on behaviour<br>Principal Investigator: Dr Noham Wolpe.
+        <br>The main points from the Study Information Sheet can be found in the previous pages. The full Study Information Sheet can be found <a href="https://static.psyact.org/consent_form/online_approved.pdf" target="popup-example" onclick="open('https:\\static.psyact.org.il/consent_form/online_approved.pdf', 'popup-example', 'height=600px'+',width=900px'+'resizable=no')">here.</a>
+      </p>
+      <div id="scroll_gif"><img style="width:100%" src="assets/img/scroll.gif"></div>
+      <p>Having read the Study Information Sheet, please read the following statements, and check the box if you agree to the conditions. Please do not hesitate to contact a member of the research team, should you have any further questions.</p>
+      <div class="cb_container"><input id="cb11" type="checkbox"> <label class="label" for="cb11">I confirm that by ticking each box, I am consenting to this element of the screening portion of the study.</label></div>
+      <div class="cb_container"><input id="cb22" type="checkbox"> <label class="label" for="cb22">I confirm that I have read, understood, and accepted the conditions in the information sheet, Version 2 dated 11/8/2021, for the above study, and I have had the opportunity to ask questions.</label></div>
+      <div class="cb_container"><input id="cb33" type="checkbox"> <label class="label" for="cb33">I understand that my participation is totally voluntary and that I am free to withdraw at any time without having to give a reason for doing so.</label></div>
+      <div class="cb_container"><input id="cb44" type="checkbox"> <label class="label" for="cb44">I understand that my responses will be stored on a password-protected computer server, in an anonymous form and labelled using a unique ID code. The data will not be linked to me personally. It may contribute to scientific papers and presentations and can be made available, anonymously, to other researchers.</label></div>
+      <div class="cb_container"><input id="cb55" type="checkbox"> <label class="label" for="cb55">I confirm I am aged 18-80 and have no current diagnosis of a mental health disorder or a current or past diagnosis of neurological conditions, including stroke and dementia, such as Alzheimer’s disease.</label></div>
+      <div class="cb_container"><input id="cb66" type="checkbox"> <label class="label" for="cb66">I agree to take part in the study.</label></div>
+      <p>If you have any further questions or worries, please contact: Dr Noham Wolpe, <a href="mailto:nwolpe@tau.ac.il">nwolpe@tau.ac.il</a>, Faculty of Medicine, Tel Aviv University</p>
+    </div>
+    <br>
+    <div class="to_center_btn start-btn">
+      <button id="next_button_hide" style="margin:0 auto 33px auto;" class="btn btn-success">
+        Start
+      </button>
+    </div>
+  </div>
+</div>
+<script>
+  let g = 0;
+  var paragraph = document.getElementsByClassName("paragraph");
+
+  function hide_paragraph() {
+    for (var i = 0; paragraph[i]; i++) {
+      if (i != g) {
+        paragraph[i].style.display = "none";
+        paragraph[i].style.visibility = "hidden"
+      } else {
+        paragraph[i].style.display = "block"
+        paragraph[i].style.visibility = "visible"
+      }
+    }
+  }
+  hide_paragraph();
+  document.body.onkeydown = function(e) {
+    if (e.keyCode == 40) {
+      if (g < 3) {
+        g++;
+        hide_paragraph();
+      }
+      if (g == 3) {
+        document.getElementById("next_button_hide").style.display = "block";
+      }
+    }
+    if (e.keyCode == 38) {
+      if (g > 0) {
+        g--;
+        document.getElementById("next_button_hide").style.display = "none";
+        hide_paragraph();
+      }
+    }
+  }
+  let scroll_gif = document.getElementById('scroll_gif');
+  let lastScrollTop = 0;
+  document.addEventListener('scroll', function(event) {
+    //   scroll_gif.style.display="none";
+    var st = window.pageYOffset || document.documentElement.scrollTop; // Credits: "https://github.com/qeremy/so/blob/master/so.dom.js#L426"
+    if (st > lastScrollTop + 200) {
+      scroll_gif.style.display = "none";
+      // downscroll code
+    } else {
+      scroll_gif.style.display = "block";
+      // upscroll code
+    }
+  });
+
+  document.getElementById('next_button_hide').addEventListener('click', function() {
+    var checkboxes = document.querySelectorAll('.cb_container input[type="checkbox"]');
+    var allChecked = true;
+    checkboxes.forEach(function(checkbox) {
+      if (!checkbox.checked) {
+        allChecked = false;
+      }
+    });
+
+    if (allChecked) {
+      jatos.startNextComponent();
+    } else {
+      alert("You cannot start the study without consenting. Please either tick the boxes or close the window.");
+    }
+  });
+
+</script>

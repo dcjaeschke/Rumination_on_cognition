@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- =========================
+         Meta & Title Section
+    ========================== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-back</title>
+    <!-- =========================
+         Script & CSS Includes
+    ========================== -->
+    <script src="jatos.js"></script> <!-- jatos.js library -->
+    <script src= "./jspsych/jspsych.js"> </script>
+    <script src= "./jspsych/plugin-html-button-response.js"> </script>
+    <script src="./jspsych/plugin-html-keyboard-response.js"></script>
+    <script src="./jspsych/html-vas-response-psyact.js"></script>
+    <script src="./jspsych/plugin-fullscreen.js"></script>  
+    <script src="https://static.psyact.org/jatos_append/jquery.min.js"></script> <!-- ADDED -->
+    <script src="https://static.psyact.org/jatos_append/jquery-ui.min.js"></script> <!-- ADDED -->
+    <script src="./assets/append_data_to_jatos.js"></script>
+    <link rel="stylesheet" href="https://static.psyact.org/jatos_append/jquery-ui.css"/> <!-- ADDED -->
+    <link rel="stylesheet" href="./css/jspsych.css">
+    <link rel="stylesheet" href="./css/upstyling.css">
+  </head>
+  <body>
+    <!-- =========================
+         Connection Error Dialog
+    ========================== -->
+    <div id="dialog" title="Connection Error" style="display: none;">
+      <p>Your internet connection has dropped.</p>
+      <button id="checkAgain">Check Connection Again</button>
+    </div>
+  </body>
+
+  <script>
+    // =========================
+    // jsPsych Initialization & Data Handling
+    // =========================
+    var jsPsych = initJsPsych({
+      /*show_progress_bar: true,
+      auto_update_progress_bar: true,
+      message_progress_bar: 'Your Progress...',*/
+      on_data_update: function() {
+        let interactionData = jsPsych.data.getInteractionData()
+        const interactionDataOfLastTrial = interactionData.filter({'trial': jsPsych.data.get().last(1).values()[0].trial_index}).values();
+        if (interactionDataOfLastTrial) {
+          jsPsych.data.get().last(1).values()[0].browser_events = JSON.stringify(interactionDataOfLastTrial)
+        }
+      },
+      on_trial_finish: function() {
+        const lastTrialValues = jsPsych.data.get().last(1).values()[0];
+        console.log(lastTrialValues);
+        // Convert the trial data to JSON
+        const trialDataJson = jsPsych.data.get().json({trial_index: lastTrialValues.trial_index});
+        jatos.submitResultData({ trialData: trialDataJson }); 
+      },
+      on_close: function() {
+        var resultJson = jsPsych.data.get().json();
+        append_data_to_jatos(resultJson, jatos.startNextComponent); 
+      },
+      on_finish: function() {
+        var resultJson = jsPsych.data.get().json();
+        append_data_to_jatos(resultJson, jatos.startNextComponent); 
+      },    
+    })
+      
+    // =========================
+    // Page Visibility Event Listener
+    // =========================
+    document.addEventListener("visibilitychange", function() {
+      var visibilityState = document.visibilityState;
+      console.log('Tab changed:', visibilityState);
+      recordTabChange(visibilityState);
+    });
+
+    // Function to record tab change in JATOS result data
+    function recordTabChange(visibilityState) {
+      var tabChangeData = { tabChange: visibilityState };
+      jatos.appendResultData(tabChangeData);
+    };
+
+    // =========================
+    // Task Parameters & Variables
+    // =========================
+    var trials_per_diff = 20;
+    var reps = 9; 
+    var n_range = [1,2,3]
+    // Other variables
+    var how_many_back;
+    var timeline = [];
+    var n_back_set = ['T', 'G', 'C', 'D', 'B', 'P']; //phonetically similar sounding
+    var sequence = [];
+    var accuracy = 100;
+    var count = 0;
+    var rep = 0;
+    var currentDifficulty;
+    var button_opt = [];
+
+    // =========================
+    // Button Options Setup
+    // =========================
+    function set_button_opt() {
+      jatos.studySessionData
+      if (jatos.studySessionData && jatos.studySessionData.button_opt && jatos.studySessionData.button_opt.length > 0) {
+        button_opt = jatos.studySessionData.button_opt;
+        console.log("studySessionButtons",button_opt)
+      } else {
+        button_opt = ["K", "D"]; // Default values if button_opt is empty
+        console.log("other Buttons",button_opt)
+        trials_per_diff = 20;
+      }
+    }
+
+    // =========================
+    // Random Difficulty Selection
+    // =========================
+    var shuffledSteps = [];
+    var currentStepIndex = 0;
+    function getRandomDifficulty(n_range) {
+      // Shuffle the steps array if it's empty
+      if  (shuffledSteps.length === 0) {
+        shuffledSteps = jsPsych.randomization.shuffle(n_range);
+        console.log("FIRST shuffledSteps",shuffledSteps)
+        currentStepIndex = 0; // Reset the index
+        console.log("currentStepIndex set to 0",currentStepIndex)
+      }
+      // Get the current step and increment the index for the next call
+      if (currentStepIndex > 2) {
+        shuffledSteps = jsPsych.randomization.shuffle(n_range);
+        console.log("shuffledSteps AGAIN",shuffledSteps)
+        currentStepIndex = 0;
+        console.log("currentStepIndex set to 0",currentStepIndex)
+      } 
+      var currentStep = shuffledSteps[currentStepIndex];
+      console.log("how many back (currentStep)",currentStep)
+      return currentStep;
+    }
+
+    // =========================
+    // Timeline: Fullscreen & Instructions
+    // =========================
+
+    // Fullscreen trial
+    var fullscreen = {
+      type: jsPsychFullscreen,
+      message: 'For some of the following study sections we have to switch to full screen mode, to avoid that the display is be faulty, which can prevent you from completing the study.<br>Pressing the button below will switch you to full screen mode<br><br>',
+      fullscreen: true
+    }
+    timeline.push(fullscreen);
+
+    // Instructions 1
+    var instructions_4 = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: '<div style="width: 800px;">'+
+        '<p>In this section, you will complete <b>SHORT SEQUENCES of different N\'s.</b></p>'+
+        '<p><b>The N\'s will appear in a random order</b>.<br>Before each sequence begins, we will show you <b>the star, that indicates the N.</b></p>'+
+        '</div>',
+      choices: ["Continue"],
+      //on_finish: (
+        //set_button_opt(button_opt)
+      //)
+    }
+    timeline.push(instructions_4);
+
+    // Instructions 2
+    var instructions_4_1 = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: '<div style="width: 800px;">'+
+       '<p><br>After each short sequence, you\'ll be asked to <b>rate<br>"How effortful did this sequence feel for you?"<br>from "No effort" to "Maximum Effort"</b></p>'+
+       '<img src="./assets/img/mental_effort.png" alt="" style="max-width:40%; height:auto;">'+ 
+       '<p><b>"No effort"</b> means you felt <b>no mental strain at all</b>, and <br><b>"Maximum Effort"</b> means you felt the <b>highest mental strain imaginable.</b></p>'+
+      '</div>',
+      choices: ["I'm ready to start!"],
+      post_trial_gap: 1000,
+    }
+    timeline.push(instructions_4_1);
+
+    // =========================
+    // JATOS onLoad: Main Task Logic
+    // =========================
+    jatos.onLoad(function() { 
+      // ---- Session Data Variables ----
+      jatos.studySessionData;
+      let warning_n = 0;
+      let nb_warn = 0;
+      let bonus_warn_n = 0;
+
+      if (jatos.studySessionData && jatos.studySessionData.warning_n !== undefined) {
+        warning_n = jatos.studySessionData.warning_n;
+      }
+      if (jatos.studySessionData && jatos.studySessionData.bonus_warning !== undefined) {
+        bonus_warn_n = jatos.studySessionData.bonus_warning;
+      }
+      if (jatos.studySessionData && jatos.studySessionData.button_opt && jatos.studySessionData.button_opt.length > 0) {
+        button_opt = jatos.studySessionData.button_opt;
+        console.log("studySessionButtons",button_opt)
+      } else {
+        button_opt = ["K", "D"]; // Default values if button_opt is empty
+        console.log("other Buttons",button_opt)
+        trials_per_diff = 20;
+      }
+      console.log("warning_n", warning_n)
+      how_many_back = getRandomDifficulty(n_range);
+
+      // =========================
+      // N-Back Sequence Trial
+      // =========================
+      var n_back_trial = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: function() {
+          if (count >= trials_per_diff) {
+            count = 1;
+            sequence = [];
+            console.log('Sequence reset'); 
+            console.log('round', rep);  
+            console.log('count', count);
+          } else {
+            count++;
+            console.log('count', count);
+            console.log('round', rep);
+          }
+
+          if(sequence.length < how_many_back){
+            var letter = jsPsych.randomization.sampleWithoutReplacement(n_back_set, 1)[0]
+          } else {
+            if(jsPsych.timelineVariable('match') == true){
+              var letter = sequence[sequence.length - how_many_back];
+            } else {
+              var possible_letters = jsPsych.randomization.sampleWithoutReplacement(n_back_set, 2);
+              if(possible_letters[0] != sequence[sequence.length - how_many_back]){
+                var letter = possible_letters[0];
+              } else {
+                var letter = possible_letters[1];
+              }
+            }
+          }
+          sequence.push(letter);
+          console.log('Sequence', sequence);
+          return '<span style="font-size: 96px;">'+letter+'</span>'
+        },
+        choices: button_opt,
+        trial_duration: 2000, // Total duration of the trial (response time)
+        stimulus_duration: 1000, // Duration for which the stimulus (letter) is visible
+        response_ends_trial: false, // ensures that when 'M' is pressed letter stays visible; would speed up the task according to reaction time
+        post_trial_gap: 0, // how long the gap between letter and letter
+        data: {
+          phase: 'test',
+          match: jsPsych.timelineVariable('match'),
+        },
+        // Evaluates the response (M or null) and saves it under correct
+        // Update count and reset sequence if trials_per_diff is reached
+        on_finish: function(data) {
+          // Evaluate the response and save it under correct
+          var button0 = button_opt[0].toLowerCase();
+          var button1 = button_opt[1].toLowerCase();
+          if (sequence.length > how_many_back) {
+            if (data.match && data.response === button0) {
+              data.evaluation = "hit";
+              data.correct = true;
+            } else if (data.match && data.response !== button0) {
+              data.evaluation = "miss";
+              data.correct = false;
+            } else if (!data.match && data.response === button1) {
+              data.evaluation = "corrRej";
+              data.correct = true;
+            } else if (!data.match && data.response == button0){
+              data.evaluation = "falseAl";
+              data.correct = false;
+            } else {
+              data.evaluation = "no response";
+              data.correct = false;
+            }
+          } else if (sequence.length <= how_many_back && data.response === null) {
+            data.correct = true;
+            data.evaluation = "no response";
+          } else if (sequence.length <= how_many_back && data.response === button1) {
+            data.correct = true;
+            data.evaluation = "corrRej";
+          } else {
+            data.correct = false;
+            data.evaluation = "falseAl";
+          }
+          data.difficulty = how_many_back;
+        },
+      }
+
+      // =========================
+      // N-Back Trials Variables
+      // =========================
+      var n_back_trials = [
+        {match: true},
+        {match: false}
+      ]
+
+      // =========================
+      // N-Back Sequence Block
+      // =========================
+      var n_back_sequence = {
+        timeline: [n_back_trial],
+        timeline_variables: n_back_trials,
+        sample: {
+          type: 'with-replacement',
+          size: trials_per_diff,
+          weights: [1, 2]
+        }
+      }
+
+      // =========================
+      // Effort Rating VAS
+      // =========================
+      var effort = {
+        type: jsPsychHtmlVasResponse,
+        stimulus: 'How effortful did this sequence feel for you?<br>'+
+        '<img src="./assets/img/mental_effort.png" alt="" style="max-width:20%; height:auto;"><br>',
+        labels: ['<span style="font-size: 21px;">0<br><b>No effort</b></span>', '', '', '', '', '', '', '', '', '', '<span style="font-size: 21px;">10<br><b>Maximum effort</b></span>'],
+        ticks: false,
+        scale_width: 500,
+        scale_colour: 'black',
+        response_ends_trial: true,
+        post_trial_gap: 0,
+        required: true,
+        data: {
+          phase: 'effort'
+        },
+        on_finish: function () {
+          rep++
+        }
+      }
+
+      // =========================
+      // Indication of N for Next Round
+      // =========================
+      var image; 
+      var indication = {
+        type: jsPsychHtmlButtonResponse,
+        stimulus: 'The N for the next round is:<br>',
+        choices: [function get_image() {
+          if (how_many_back == 1) {
+            image = '<img src="./assets/img/n-1.png" alt="n=1 star image" style="max-width:90%; height:auto; display: block; margin: 0 auto;">'
+          } else if (how_many_back == 2) {  
+            image = '<img src="./assets/img/n-2.png" alt="n=2 star image" style="max-width:90%; height:auto; display: block; margin: 0 auto;">'
+          } else if (how_many_back == 3) {  
+            image = '<img src="./assets/img/n-3.png" alt="n=3 star image" style="max-width:90%; height:auto; display: block; margin: 0 auto;">'
+          }
+          console.log('how_many_back in indication',how_many_back)
+          return '<span style="font-size: 96px;">'+image+'</span>'
+        }],
+        button_html: '<button class="jspsych-btn-square" style="display: flex; align-items: center; justify-content: center;">%choice%</button>',
+        post_trial_gap: 2500,
+      }
+
+      // =========================
+      // Warning/Feedback Block
+      // =========================
+      let warn;
+      var warning = {
+        type: jsPsychHtmlButtonResponse,
+        stimulus: function(){
+          var trials = jsPsych.data.get().filter({phase: 'test'}).last(trials_per_diff-how_many_back);
+          var n_trials = trials.count();
+          var no_response = trials.filter({response: null}).count();
+        
+          var noR_Perc = no_response/n_trials;
+
+          if (noR_Perc > 0.25 ) {
+            warn = true;
+            nb_warn ++;
+            bonus_warn_n ++;
+            var html_warning = "<div style='width:800px;'>"+
+              "<p><b>Oops!</b></p>"+
+              "<p>It appears you missed <b>"+no_response+"</b> letters.</p>"+
+              "<p>Please make sure you press match or non-match for every letter. </p>"+
+              "<p>If you miss too many, we unfortunately will have to reject your submission in line with Prolific's Attention and Comprehension Check Policy.</p>"
+              "<div>"
+            return html_warning;
+          } else {
+            warn = false;
+            var html_continue = "<div style='width:800px;'>"+
+              "<p><b>Great!</b></p>"+
+              "<p>You have completed round "+rep+" of "+reps+".</p>"+
+              "<div>"
+            return html_continue;
+          }
+        },
+        choices: ["Next!"],
+        post_trial_gap: 0,
+        on_finish: function (data) {
+          data.warning = warn;
+          data.nb_warnings = nb_warn;
+          data.bonus_warning = bonus_warn_n;
+          jatos.studySessionData.nb_warnings = nb_warn;
+          jatos.studySessionData.bonus_warning = bonus_warn_n;
+          console.log("number of warnings:", nb_warn);
+          console.log("got a warning:",warning)
+          console.log('how_many_back in effort BEFORE getRandomDifficulty',how_many_back)
+          currentStepIndex++;
+          console.log("currentStepIndex increased by one",currentStepIndex)
+          how_many_back = getRandomDifficulty(n_range); // Update how_many_back here
+          console.log('how_many_back in effort AFTER getRandomDifficulty',how_many_back)
+        }
+      };
+      
+      // =========================
+      // Accuracy Check Block
+      // =========================
+      var performance;
+      var hits;
+      var corrRejs;
+      var falseAl;
+      var missPerc;
+      var flag = "FLAG";
+
+      // Evaluates the accuracy of the practice_seqeuence and updates the variable accuracy accordingly
+      var check_accuracy_trial = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: '<p>Checking accuracy...</p>',
+        trial_duration: 0,  
+        on_finish: function (data) {
+          // calculate task performance
+          var test_trials = jsPsych.data.get().filter({phase: 'test'}).last(trials_per_diff-how_many_back);
+          var number_of_trials = test_trials.count();
+          var match_trials = test_trials.filter({match: true}).count();
+          var non_match_trials = test_trials.filter({match: false}).count();
+          var correct_trials = test_trials.filter({correct: true}).count();
+          var hit_trials = test_trials.filter({evaluation: 'hit'}).count();
+          var corrRej_trials = test_trials.filter({evaluation: 'corrRej'}).count();
+          var falseAl_trials = test_trials.filter({evaluation: 'falseAl'}).count();
+          var miss_trials = test_trials.filter({evaluation: 'miss'}).count();
+          performance = (correct_trials / number_of_trials) * 100;
+          hits_perc = (hit_trials / match_trials) * 100;
+          corrRejs_perc = (corrRej_trials / non_match_trials) * 100;
+          falseAls_perc = (falseAl_trials / non_match_trials) * 100;
+          misses_perc = (miss_trials / match_trials) * 100;
+          // check validity of reaction times
+          var valid_trials = test_trials.filter(function(trial) {
+            return trial.rt >= 200;  // Only include trials with RT >= 200ms
+          });
+          var valid_trials_n = valid_trials.count();
+          console.log("valid_trials:", valid_trials_n)
+          too_fast =  number_of_trials - valid_trials_n;
+          console.log("too_fast:", too_fast)
+          // save to the data
+          data.performance = performance;
+          data.hits_perc = hits_perc;
+          data.corrRejs_perc = corrRejs_perc;
+          data.falseAl_perc = falseAls_perc;
+          data.misses_perc = misses_perc;
+          data.hit_trials = hit_trials;
+          data.corrRej_trials = corrRej_trials;
+          data.falseAl_trials = falseAl_trials;
+          data.miss_trials = miss_trials;
+          data.too_fast = too_fast;
+          if (too_fast > 0) {
+            data.flag = flag;
+            bonus_warn_n++;
+          }
+          if (performance < 40) {
+            bonus_warn_n++;
+          }
+        },
+      };
+
+      // =========================
+      // N-Back + Effort Block (Main Loop)
+      // =========================
+      var n_back_effort = {
+        timeline: [indication, n_back_sequence, check_accuracy_trial, effort, warning],
+        sample: {
+          type: 'with-replacement',
+          size: reps,
+        },
+      };
+      timeline.push(n_back_effort);
+
+      // =========================
+      // Run jsPsych Timeline
+      // =========================
+      jsPsych.run(timeline);
+    })
+
+  </script>
+</html>

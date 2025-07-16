@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- =========================
+         Meta and External Resources
+         ========================= -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script> <!-- jatos.js library -->
+    <link href="css/styles.css" rel="stylesheet" type="text/css" /> <!-- costume page styling -->
+
+    <title>Reflection and Emotion Survey</title>
+    <style>
+        /* =========================
+           Page Styling
+           ========================= */
+        body {
+            background-color: rgb(221, 236, 246);
+        }    
+    </style>
+</head>
+<body>
+    <!-- =========================
+         Page 1: Reflection Question
+         ========================= -->
+    <div class="container" id="page1">
+        <h3>Great job! You are done with the reflection and imagination challenge.<br></h3>
+        <p><br>How much are you reflecting on the upsetting event right now?<br></p>
+        <div class="likert-scale">
+            <input type="radio" name="reflection" id="reflection0" value="0"> 
+            <input type="radio" name="reflection" id="reflection1" value="1"> 
+            <input type="radio" name="reflection" id="reflection2" value="2"> 
+            <input type="radio" name="reflection" id="reflection3" value="3"> 
+        </div>
+        <div class="likert-labels">
+            <label for="reflection0">0 –<br> Not at all</label>
+            <label for="reflection1">1 –<br> Slightly</label>
+            <label for="reflection2">2 –<br> Moderately</label>
+            <label for="reflection3">3 –<br> Very much</label>
+        </div>
+        <div class="navigation">
+            <button id="nextButton">Next</button>
+        </div>
+    </div>
+
+    <!-- =========================
+         Page 2: Mood VAS Question
+         ========================= -->
+    <div class="container" id="page2" style="display:none;">
+        <p><b>How happy/sad are you right now?</b><br><br></p>
+        <div class="vas-container" id="vasContainer">
+            <div class="vas-marker" id="vasMarker"></div>
+        </div>
+        <div class="vas-labels">
+            <span>-5 <br> Most sad <br> I've been <br> <img src='./emotions/sad.png' style="max-width:100%; height:auto;"></span>
+            <span>0 <br> Neutral<br><br></span>
+            <span>+5 <br> Most happy <br> I've been <br> <img src='./emotions/happy.png' style="max-width:100%; height:auto;"></span>
+        </div>
+        <button id="submitButton" disabled>Submit</button> <!-- Initially disabled -->
+    </div>
+
+    <!-- =========================
+         Main Script: Logic & Event Handlers
+         ========================= -->
+    <script>
+        jatos.onLoad(function() { 
+            // Store participant responses
+            let responses = {};
+            
+            // =========================
+            // Next Button: Reflection Response
+            // =========================
+            document.getElementById('nextButton').addEventListener('click', function() {
+                let reflectionResponse = document.querySelector('input[name="reflection"]:checked');
+                if (reflectionResponse) {
+                    responses.reflection = reflectionResponse.value;
+                    document.getElementById('page1').style.display = 'none';
+                    document.getElementById('page2').style.display = 'block';
+                } else {
+                    alert("Please select an answer for reflection.");
+                }
+            });
+
+            // =========================
+            // VAS (Visual Analog Scale) Logic
+            // =========================
+            const vasContainer = document.getElementById('vasContainer');
+            const vasMarker = document.getElementById('vasMarker');
+            const submitButton = document.getElementById('submitButton');
+            let vasValue = null;
+
+            // Handle click event on VAS container
+            vasContainer.addEventListener('click', function (event) {
+                const rect = vasContainer.getBoundingClientRect();
+                const clickX = event.clientX - rect.left; // Get x position relative to container
+                const percent = (clickX / rect.width) * 100;
+
+                // Update marker position
+                vasMarker.style.left = `${percent}%`;
+                vasMarker.style.display = 'block'; // Show marker
+
+                // Calculate VAS value based on percentage
+                vasValue = (percent / 100);
+                submitButton.disabled = false; // Enable submit button
+            });
+
+            // =========================
+            // Submit Button: Save Data
+            // =========================
+            submitButton.addEventListener('click', function() {
+                responses.mood = vasValue;
+
+                jatos.submitResultData({
+                    responses: responses
+                }, jatos.startNextComponent);
+            });
+        });
+    </script>
+</body>
+</html>

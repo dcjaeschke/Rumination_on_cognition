@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- =========================
+                 JS & CSS LIBRARIES
+        ========================== -->
+        <script src="jatos.js"></script> <!-- jatos.js library -->
+        <script src="./jspsych/jspsych.js"></script>
+        <script src="jspsych/plugin-survey-multi-select.js"></script>
+        <script src="./jspsych/plugin-survey_2.js"></script>
+        <script src="./jspsych/plugin-survey-likert.js"></script>
+        <script src="./jspsych/plugin-survey-likert.js"></script>
+        <script src="./jspsych/plugin-html-button-response.js"></script>
+        <script src="./jspsych/plugin-survey-text.js"></script>
+        <script src="./jspsych/plugin-html-keyboard-response.js"></script> 
+        <script src="https://static.psyact.org/jatos_append/jquery.min.js"></script> <!-- ADDED -->
+        <script src="https://static.psyact.org/jatos_append/jquery-ui.min.js"></script> <!-- ADDED -->
+        <script src="./assets/append_data_to_jatos.js"></script>
+        <script src="./jspsych/plugin-call-function.js"></script> <!-- Include call-function plugin for delazed button -->
+        <link href="https://static.psyact.org/jspsych-7.3.1/css/jspsych.css" rel="stylesheet" type="text/css" />
+        <link href="css/styles.css" rel="stylesheet" type="text/css" /> <!-- costume page styling -->
+
+    </head>
+    <style> 
+        /* =========================
+                 PAGE STYLES
+        ========================== */
+        body {
+            background-color: rgb(221, 236, 246);
+        }
+    </style> 
+    <body>
+        <!-- =========================
+                 CONNECTION ERROR DIALOG
+        ========================== -->
+        <div id="dialog" title="Connection Error" style="display: none;">
+            <p>Your internet connection has dropped.</p>
+            <button id="checkAgain">Check Connection Again</button>
+        </div>
+    </body>
+    <script> 
+        // =========================
+        //   INITIALIZE JSPYCH
+        // =========================
+        var jsPsych = initJsPsych({
+            // on_trial_start: jatos.addAbortButton,
+            on_trial_finish: function (data) {
+                // save data after each trial
+                let trial_data_save = jsPsych.data.get().last(1).json();
+                append_data_to_jatos(trial_data_save); //adds data to server as the trial goes!!
+            },
+            //on_finish: () => jatos.endStudy(jsPsych.data.get().json())
+            on_finish: () => jatos.startNextComponent()
+        });
+
+        // =========================
+        //   TIMELINE DEFINITION
+        // =========================
+        var timeline = []; /* create timeline */
+
+        // =========================
+        //   DEMO SCREEN (COMMENTED OUT)
+        // =========================
+        var demo_screen1 = {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: '<p><h1>Welcome to a Short Demo of Our Induction</h1></p>'+
+                '<h2><b>Try it yourself in under a minute!</b></h2>'+
+                '<img src="./assets/img/demo.png" alt="demo" style="max-width:15%; height:auto;">'+
+                '<p><b>You’ll experience the inductions, just like our participants <br> but you’ll get to see both sides! ;) :</b><br><br>- Choose & Imagine an event <br>- Rumination & Neutral Inductions (2 prompts each) <br>- Attention & Manipulation check</p>'+
+                '<p><b>Looking forward to your feedback afterward! :) </b></p>',  
+            choices: ['Continue'], //a button for continuing to view experiment
+        }
+        //timeline.push(demo_screen1)
+
+        // =========================
+        //   WELCOME SCREEN
+        // =========================
+        var welcome_screen1 = {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: '<p><h1>Welcome to Imagination and Reflection Time!!</h1></p>'+
+                '<p><br>You are already halfway through the experiment! <br><i>Before you continue, make sure you are ready to focus and engage in this imagination challenge.</i> If you you need a break or a quick stretch, now would be a great time to take one.<br><img src="./assets/img/stretch.png" alt="rum image" style="max-width:30%; height:auto;"><br>In this challenge, we ask you to create and imagine a vivid scenario in your head. At the end, you will also describe your thoughts in a few words.<br><br>There will be some attention checks along the way.</p>',  
+            choices: ['Continue'], //a button for continuing to view experiment
+        }
+        timeline.push(welcome_screen1)
+
+        // =========================
+        //   EVENT RECALL SCREEN
+        // =========================
+        var event = {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: `<p> 
+                                     <blockquote>Think about a recent personal event from the past weeks, that was emotionally upsetting for you.<br>
+                                    This could be a fight with someone close to you, an unfair criticism etc.</blockquote>
+                                    </p>
+                                    <img src="./assets/img/worry_wo_man.png" alt="rum image" style="max-width:55%; height:auto;">
+                                    <br>
+                                                    `,
+            choices: ['Continue'], //a button for continuing to view experiment
+            post_trial_gap: 1000,
+        }
+        timeline.push(event)
+
+        // =========================
+        //   IMAGINE EVENT SCREEN
+        // =========================
+        var imagine = {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: '<p> <blockquote>Vividly relive the event, immersing yourself in the emotions as if transported back in time.<br>Feel the intensity, and let the details resurface.</blockquote></p>'+
+                '<p><img src="./assets/img/imagine.png" alt="rum image" style="max-width:30%; height:auto;"></p>',
+            choices: ['Continue'], //a button for continuing to view experiment
+        }
+        timeline.push(imagine)
+
+        // =========================
+        //   EVENT TITLE INPUT
+        // =========================
+        var trial3 = {
+            type: jsPsychSurveyText,
+            questions: [
+                {
+                    prompt: '<img src="./assets/img/write.png" alt="" style="max-width:30%; height:auto;"><br>Give the upsetting event a title that best summarizes your experience.<br><br>',
+                    placeholder: 'Your title for the event',
+                    required: true
+                },
+            ]
+        }
+        timeline.push(trial3);
+
+        // =========================
+        //   EVENT LABELS & FEELINGS
+        // =========================
+        var trial = {
+            type: jsPsychSurveyMultiSelect,
+            questions: [
+                {
+                    prompt: "<img src='./assets/img/todo.png' alt='todo' style='max-width:18%; height:auto;'><br><b>What labels best describe the event?</b><br>", 
+                    options: ['fight', 'critique', 'misunderstanding', 'rejection', 'failure', 'loss','embarrassment','betrayal','exclusion','discrimination', 'other'],  // Added more options for better coverage
+                    horizontal: true,
+                    required: true,
+                    name: 'event_labels'
+                }, 
+                {
+                    prompt: "<b>How did you feel in that situation?</b>", 
+                    options: ['worried', 'tense', 'disappointed', 'sad', 'depressed', 'angry', 'frustrated', 'anxious','infuriated','offended', 'insulted', 'other'],  // Expanded emotion options
+                    horizontal: true,
+                    required: true,
+                    name: 'feelings',
+                }
+            ], 
+        };
+        timeline.push(trial)
+
+        // =========================
+        //   FEELINGS STRENGTH LIKERT
+        // =========================
+        var likert_scale = [
+            'very mild', 'mild', 'moderate', 'strong', 'very strong'
+        ];
+
+        var trial2 = {
+            type: jsPsychSurveyLikert,
+            questions: [
+                {prompt: "<b>How strong were these feelings in that moment?</b>", name: 'strength_then', labels: likert_scale},
+                {prompt: "<b>Thinking about this event, how strong are these feelings right now?</b>",
+                name: 'strenght_now', labels: likert_scale},
+            ],
+        };
+        timeline.push(trial2);
+
+        // =========================
+        //   START JSPYCH ON JATOS LOAD
+        // =========================
+        jatos.onLoad(function() {
+            jsPsych.run(timeline);
+            // Execute the function when the component is loaded
+        });
+    </script>
+</html>

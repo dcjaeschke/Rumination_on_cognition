@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script> <!-- jatos.js library -->
+    <link href="css/styles.css" rel="stylesheet" type="text/css" /> <!-- costume page styling -->
+
+    <title>Reflection and Emotion Survey</title>
+    <style>
+        body {
+        /* background color for each experiment section is different for better orientation */
+        background-color: #f7f3d6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="instructionContainer">
+        <h3>Great job completing the last round of the letter game!</h3>
+        <p><br>Next we want to ask you 4 questions to assesses <br>your <b>level of concentration during the n-back task</b> that you just completed. <br><br>Please read the following statements carefully and <b>answer them honestly</b>,<br> since we are truly interested in your experience.<br><br><b>Rate how much you agree with each statement<br>from "Never" to "Very often"</b>.<br><br></p>
+        <button class="start-button" id="startButton">Let's go</button>
+    </div>
+
+    <div class="container" id="itemContainer" style="display: none;">
+        <p>During the task...</p>
+        <h3 id="sentenceText"><br></h3>     
+        <div class="likert-scale">
+            <input type="radio" name="reflection" id="reflection0" value="0"> 
+            <input type="radio" name="reflection" id="reflection1" value="1"> 
+            <input type="radio" name="reflection" id="reflection2" value="2"> 
+            <input type="radio" name="reflection" id="reflection3" value="3"> 
+            <input type="radio" name="reflection" id="reflection3" value="4"> 
+        </div>
+        <div class="likert-labels">
+            <label for="reflection0">0 –<br> Never</label>
+            <label for="reflection1">1 –<br> Rarely</label>
+            <label for="reflection2">2 –<br> Sometimes</label>
+            <label for="reflection3">3 –<br> Often</label>
+            <label for="reflection3">4 –<br> Very often</label>
+        </div>
+        <div class="navigation">
+            <button id="nextButton">Next</button>
+        </div>
+    </div>
+
+    <script>
+        jatos.onLoad(function() { 
+            let responses = {};  // To store the participant's answers
+
+            const sentences = [
+                "I found it hard to block out distracting, task-irrelevant thoughts.",
+                "I thought about something that happened in the past.",
+                "I thought about personal worries.",
+                "I sometimes caught myself zoning out while completing the task."
+            ];
+            let currentSentenceIndex = 0;
+            const nextButton = document.getElementById("nextButton");
+            const startButton = document.getElementById("startButton");
+            const sentenceText = document.getElementById("sentenceText");
+
+            // Event listener for the start button in the second instruction
+            startButton.addEventListener("click", function() {
+                instructionContainer.style.display = "none";  // Hide the writing instruction page
+                itemContainer.style.display = "block";  // Show the sentence page
+                updateSentence();  // Load the first sentence
+            });
+
+            // Function to update the sentence displayed
+            function updateSentence() {
+                sentenceText.textContent = sentences[currentSentenceIndex];
+                // Uncheck all radio buttons
+                const radioButtons = document.querySelectorAll('input[name="reflection"]');
+                radioButtons.forEach(radio => {
+                    radio.checked = false;
+        });
+            }
+
+            nextButton.addEventListener("click", function() {
+                let reflectionResponse = document.querySelector('input[name="reflection"]:checked');
+                    if (reflectionResponse) {
+                        if (currentSentenceIndex < sentences.length-1) {
+                            var result = {"item": currentSentenceIndex, "response": reflectionResponse.value};
+                            jatos.appendResultData(result);
+                            currentSentenceIndex++;
+                            updateSentence(); 
+                        } else {
+                            var result = {"item": currentSentenceIndex, "response": reflectionResponse.value};
+                            jatos.appendResultData(result, jatos.startNextComponent);
+                        }
+                    } else {
+                        alert("Please select an answer");
+                    }
+            });
+
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+

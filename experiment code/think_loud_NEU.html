@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script>
+    <link href="./css/styles.css" rel="stylesheet" type="text/css" /> <!-- custom page styling -->
+
+    <title>Imagination Task</title>
+    <style>
+        body {
+            background-color: rgb(221, 236, 246);
+        }
+    </style>
+</head>
+<body>
+    <!-- =======================
+         SECTION: Instructions 1/3
+         ======================= -->
+    <div class="container" id="instructionContainer">
+        <h1>Instructions 1/3</h1>
+        <p>Instead of dwelling on an upsetting event, it can be helpful to <b>direct your thoughts <br> away from the event, towards something else: e.g. a day-to-day activity</b>. <br> This could involve traveling to a friend, going to a Bookstore, or even just riding public transport.<br><br><b>It doesn't have to be complicated to be effective!</b></p>
+        <img src="./assets/img/identify_challenge.png" alt="" style="max-width:35%; height:auto;"><br>
+        <p>On the next page, <b>you will find prompts designed to <br> guide you through planning a regular trip to the grocery store</b>. <br>Even if you don't do the grocery shopping or cooking, <br>we ask you to <b> use the prompts and write a sentence or two <br></b> to plan a hypothetical trip to the grocery store.</p></p>
+        <button class="start-button" id="nextButton">Next</button>
+    </div>
+
+    <!-- =======================
+         SECTION: Instructions 2/3
+         ======================= -->
+    <div class="container" id="writingInstructionContainer" style="display: none;">
+        <h1>Instructions 2/3</h1>
+        <p><b> Importantly, you will only see the word you are currently writing.</b><br> Once you continue to the next word, the previous word will disappear.<br><br><b> This is meant to make your experience as close as possible<br> to the experience of thinking out loud.</b>
+            <br><img src="./assets/img/think_loud2.png" alt="rum image" style="max-width:40%; height:auto;"><br>
+            To make sure you share a complete thought with us,<br> there will be a minimum number of words before the button turns green.</p>
+        <button class="start-button" id="next2Button">Next</button>
+    </div>
+
+    <!-- =======================
+         SECTION: Instructions 3/3 (Practice)
+         ======================= -->
+    <div class="container" id="writingPracticeContainer" style="display: none;">
+        <h1>Instructions 3/3</h1>
+        <p>PRACTICE <br>
+            <img src="./assets/img/write.png" alt="rum image" style="max-width:10%; height:auto;"><br>
+            <b>Please type the following paragraph word by word:</b> <br><br>
+            We ask you to plan a regular trip to the grocery store using the prompts.<br>
+            For each prompt, write a sentence or two about <br> the details for each step, as if you were thinking out loud.</p>
+        <textarea id="textEntryP" placeholder="Start typing here..."></textarea>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBarP"></div>
+        </div>
+        <button class="start-button" id="startButton" disabled>Start</button>
+    </div>
+
+    <!-- =======================
+         SECTION: Main Task (Sentence Writing)
+         ======================= -->
+    <div class="container" id="sentenceContainer" style="display: none;">
+        <h1 id="sentenceText"></h1>
+        <p style="text-align: left; font-style: italic;">Use the prompt and write a sentence or two planning each step.<br></p>
+        <textarea id="textEntry" placeholder="Start typing here..."></textarea>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <button class="continue-button" id="continueButton" disabled>Continue</button>
+    </div>
+
+    <!-- =======================
+         SECTION: Review Page
+         ======================= -->
+    <div class="container" id="review_page" style="display: none;">
+        <form class="form" id="form" style="text-align: left;">
+            <h3>Review the sentences below and select the one that appeared on the pages before.</h3><br>
+            <label>
+                <input type="radio" name="sentence" value="1"> 1. Describe the recipe of your favorite meal.
+            </label><br><br>
+            <label>
+                <input type="radio" name="sentence" value="2"> 2. Think about your weekly grocery shopping routine. 
+            </label><br><br>
+            <label>
+                <input type="radio" name="sentence" value="3"> 3. What does the store look like, and how do you organize your shopping route?
+            </label><br><br>
+            <label>
+                <input type="radio" name="sentence" value="4"> 4. Tell us what sort of music you like and what you currently listen to.
+            </label><br><br>
+            <button class="start-button" type="button" id="finishButton">Submit</button>
+        </form>
+    </div>
+
+    <!-- =======================
+         SECTION: JavaScript Logic
+         ======================= -->
+    <script>
+        // JATOS onLoad: Main experiment logic
+        jatos.onLoad(function () {
+            // =======================
+            // Variables and Setup
+            // =======================
+            const sentences = [
+                "1. Tell us what sort of food you like and what meal(s) you would want to prepare for the week.",
+                "2. Make a Shopping List: Think about the items you need.",
+                "3. Choose a Store: Decide which grocery store you want to visit. What factors are influencing your choice?",
+                "4. Choose a time: When do you plan to go and why?",
+                "5. Travel to the Store: Do you drive, walk, or take public transport? Why is it the most convenient for you?",
+                "6. What does the store look like, and how do you organize your shopping route?",
+                "7. Considering prices, brands and quality. How do you decide what to choose?",
+                "8. Describe the checkout process and how you plan to carry everything home.",
+            ];
+            let bonus_warn_n = 0;
+            let tab_change = false;
+            let n_tab_change = 0;
+            if (jatos.studySessionData && jatos.studySessionData.bonus_warning !== undefined) {
+                bonus_warn_n = jatos.studySessionData.bonus_warning;
+            }
+
+            // =======================
+            // Tab Change Detection
+            // =======================
+            document.addEventListener('visibilitychange', function () {
+                if (document.hidden) {
+                    // Increment the counter when the tab becomes hidden (user switched tabs)
+                    bonus_warn_n++;
+                    tab_change = true;
+                    n_tab_change++;
+                    console.log('Tab was changed, bonus_warn_n:', bonus_warn_n);
+                }
+            });
+
+            // =======================
+            // DOM Elements
+            // =======================
+            let currentSentenceIndex = 0;
+            let nWords = 0;
+            const trainWords = 27; // 27
+            const minWords = 10;  // Minimum words required before showing the continue button
+
+            let wordCountDisplayP = document.getElementById("wordCountP");
+            let wordCountDisplay = document.getElementById("wordCount");
+            const sentenceText = document.getElementById("sentenceText");
+            const textEntryP = document.getElementById("textEntryP");
+            const textEntry = document.getElementById("textEntry");
+            const continueButton = document.getElementById("continueButton");
+            const startButton = document.getElementById("startButton");
+            const nextButton = document.getElementById("nextButton");
+            const next2Button = document.getElementById("next2Button");
+            const instructionContainer = document.getElementById("instructionContainer");
+            const writingInstructionContainer = document.getElementById("writingInstructionContainer");
+            const writingPracticeContainer = document.getElementById("writingPracticeContainer");
+            const sentenceContainer = document.getElementById("sentenceContainer");
+            const review_page = document.getElementById("review_page");
+            const sentenceSelection = document.getElementById("sentenceSelection");
+
+            const progressBarP = document.getElementById("progressBarP");
+            let progressBar = document.getElementById("progressBar");
+
+            // Array to store user responses & startTime for each sentence
+            let responses = [];
+            let sentenceStartTime; 
+            let lastKeyTime;
+
+            // =======================
+            // Function: Update Sentence
+            // =======================
+            function updateSentence() {
+                sentenceText.textContent = sentences[currentSentenceIndex];
+                textEntry.value = "";  // Clear the text entry for each new sentence
+                nWords = 0;  // Reset word count
+                continueButton.disabled = true;  // Disable the continue button initially
+                sentenceStartTime = Date.now()
+                lastKeyTime = sentenceStartTime;
+            }
+
+            // =======================
+            // Navigation: Instructions
+            // =======================
+            nextButton.addEventListener("click", function() {
+                instructionContainer.style.display = "none";  // Hide the instruction page
+                writingInstructionContainer.style.display = "block";  // Show the writing instruction page
+            });
+
+            next2Button.addEventListener("click", function() {
+                writingInstructionContainer.style.display = "none";  // Hide the instruction page
+                writingPracticeContainer.style.display = "block";  // Show the writing instruction page
+            });
+
+            // =======================
+            // Practice: Start Button
+            // =======================
+            startButton.addEventListener("click", function() {
+                writingPracticeContainer.style.display = "none";  // Hide the writing instruction page
+                sentenceContainer.style.display = "block";  // Show the sentence page
+                saveData();
+                updateSentence();  // Load the first sentence
+            });
+
+            // =======================
+            // Practice: Typing Handler
+            // =======================
+            let keysPressed = [];  
+            let rts = []; 
+            textEntryP.addEventListener("keydown", function(event) {
+                if (event.key !== "Shift") {
+                    let keyPressed = event.key;  // Capture the key pressed
+                    let currentTime = Date.now();
+                    let rt = currentTime - lastKeyTime;
+                    lastKeyTime = currentTime;
+
+                    keysPressed.push(keyPressed);
+                    rts.push(rt);
+                }
+
+                if (event.key === " " || event.key === "Enter") {
+                    let currentWord = textEntryP.value.trim();  // Trim current word
+
+                    if (currentWord.length > 0) {
+                        if (currentWord.length > 2) {
+                            nWords += 1;
+                            // Calculate the progress as a percentage
+                            const progress = Math.min((nWords / trainWords) * 100, 100);
+                            progressBarP.style.width = progress + "%";
+                        }
+                        textEntryP.value = "";  // Clear the text entry for next word
+                    }
+
+                    // Show the continue button if minimum word count is reached
+                    startButton.disabled = nWords < trainWords;
+                }
+                console.log("keysPressed", keysPressed);
+                console.log("rts", rts)
+            });
+
+            // =======================
+            // Main Task: Typing Handler
+            // =======================
+            textEntry.addEventListener("keydown", function(currentWord) {
+                if (event.key !== "Shift") {
+                    let keyPressed = event.key;  // Capture the key pressed
+                    let currentTime = Date.now();
+                    let rt = currentTime - lastKeyTime;
+                    lastKeyTime = currentTime;
+
+                    keysPressed.push(keyPressed);
+                    rts.push(rt);
+                    console.log("keyPressed", keyPressed);
+                    console.log("rt", rt)
+                    console.log("keysPressed", keysPressed);
+                    console.log("rts", rts)
+                }
+
+                if (event.key === " " || event.key === "Enter") {
+                    let currentWord = textEntry.value.trim();
+
+                    if (currentWord.length > 0) {
+                        if (currentWord.length > 2) {
+                            nWords += 1;
+                            // Calculate the progress as a percentage
+                            const progress = Math.min((nWords / minWords) * 100, 100);
+                            progressBar.style.width = progress + "%";
+                        }
+                        // Clear the textbox after each word
+                        textEntry.value = "";
+                    }
+                    // Show the continue button after reaching the minimum word count
+                    continueButton.disabled = nWords < minWords;
+                }
+            });
+
+            // =======================
+            // Main Task: Continue Button
+            // =======================
+            continueButton.addEventListener("click", function() {
+                console.log("Current Word Count: ", nWords); // Debug log
+                if (nWords < minWords) {
+                    // Alert user if they haven't typed enough words
+                    alert(`Please type at least ${minWords} words before continuing.`);
+                } else {
+                    currentSentenceIndex++;
+
+                    if (currentSentenceIndex < sentences.length) {
+                        saveData();
+                        updateSentence();  // Load the next sentence
+                    } else {
+                        saveData();
+                        sentenceContainer.style.display = "none";  // Hide the writing instruction page
+                        review_page.style.display = "block";  // Show the sentence page
+                    }
+                }
+            });
+
+            // =======================
+            // Data Saving Function
+            // =======================
+            let sentenceN = 0;
+            function saveData() {
+                responses[sentenceN] = { 
+                    timestamp: Date.now(),
+                    sentence: sentenceN,
+                    wordCount: nWords,
+                    keysPressed: keysPressed,
+                    rts: rts
+                };
+                jatos.appendResultData({ // Zwischenspeichern
+                    timestamp: Date.now(),
+                    sentence: sentenceN,
+                    wordCount: nWords,
+                    keysPressed: keysPressed,
+                    rts: rts
+                })
+                sentenceN ++;
+                rts = [];
+                keysPressed = [];
+                progress = 0;
+                progressBar.style.width = progress + "%";
+            }
+
+            // =======================
+            // Review Page: Submit Handler
+            // =======================
+            document.getElementById("finishButton").addEventListener("click", function() {
+                const selectedSentence = document.querySelector('input[name="sentence"]:checked');
+                
+                if (!selectedSentence) {
+                    alert("Please choose a sentence.");
+                    return;
+                }
+                
+                const sentenceValue = selectedSentence.value;
+                console.log("selectedSentence", sentenceValue);
+                
+                let results = { "selectedSentence": sentenceValue };
+                
+                if (sentenceValue === "3") {
+                    results.condition = 'neu';
+                    results.correctSelection = true;
+                    results.bonus_warning = bonus_warn_n;
+                    results.tab_change = tab_change;
+                    results.n_tab_change = n_tab_change;
+                    results.timestamp = Date.now()
+                } else {
+                    results.condition = 'neu';
+                    results.correctSelection = false;
+                    bonus_warn_n++;
+                    results.bonus_warning = bonus_warn_n;
+                    results.tab_change = tab_change;
+                    results.n_tab_change = n_tab_change;
+                    results.timestamp = Date.now()
+                }
+                jatos.studySessionData.bonus_warning = bonus_warn_n;
+                jatos.appendResultData(results, jatos.startNextComponent);
+            });
+
+        });
+    </script>
+</body>
+</html>

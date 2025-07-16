@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--<link rel="stylesheet" href="./css/upstyling.css"> -->
+    <script src="jatos.js"></script>
+    <title>Energy vs Fatigue Study</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            overflow: auto;
+            background-color: #e0f7f3;
+        }
+        h1 {
+            font-size: 2.5vw; /* Responsive text size */
+        }
+        h2 {
+            font-size: 1.5vw; /* Responsive text size */
+        }
+        .word-cloud {
+            /* margin: 20px 0; */
+            position: relative;
+            height: 70vh; /* Responsive height */
+            width: 90vw; /* Responsive width */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .word-button {
+            position: absolute;
+            padding: 1vw 2vw; /* Responsive padding */
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            font-size: 1.5vw; /* Responsive font size */
+            background-color: white;
+        }
+        .word-button.active {
+            background-color: #ADD8E6; /* Light blue for selected words */
+            color: white;
+            /* border-color: #4CAF50; */
+        }
+        .button-container {
+            margin: 20px 0;
+        }
+        .button-container button {
+            padding: 1.5vw 3vw; /* Make the buttons bigger */
+            font-size: 1.5vw; /* Increase font size */
+            border: none;
+            border-radius: 5px;
+            cursor: not-allowed; /* Initially not allowed */
+            background-color: #ccc; /* Greyed out by default */
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .button-container button.active {
+            background-color: #4CAF50; /* Green when active */
+            cursor: pointer; /* Pointer cursor when active */
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="energy-screen">
+        <h1>Which words do you associate with<br><u>No Energy</u>?</h1>
+        <h2>Please choose 6 words.</h2>
+        <div class="word-cloud" id="energy-cloud">
+            <!-- Buttons will be generated here -->
+        </div>
+        <div class="button-container">
+            <button id="next-button" disabled>Next</button>
+        </div>
+    </div>
+
+    <div id="fatigue-screen" class="hidden">
+        <h1>Which words do you associate with <br><u>Maximum Fatigue</u>?</h1>
+        <h2>Please choose 6 words.</h2>
+        <div class="word-cloud" id="fatigue-cloud">
+            <!-- Buttons will be generated here -->
+        </div>
+        <div class="button-container">
+            <button id="submit-button" disabled>Submit</button>
+        </div>
+    </div>
+
+    <script>
+        // Global selections and max selection limit
+        const energySelections = new Set();
+        const fatigueSelections = new Set();
+        const maxSelections = 6;
+
+        function updateButtonState(cloudId) {
+            const button = cloudId === "energy-cloud" ? document.getElementById("next-button") : document.getElementById("submit-button");
+            const selections = cloudId === "energy-cloud" ? energySelections : fatigueSelections;
+
+            if (selections.size === maxSelections) {
+                button.disabled = false;
+                button.classList.add("active");
+            } else {
+                button.disabled = true;
+                button.classList.remove("active");
+            }
+        }
+
+        function toggleSelection(button, cloudId) {
+            const word = button.textContent;
+            const selections = cloudId === "energy-cloud" ? energySelections : fatigueSelections;
+
+            if (button.classList.contains("active")) {
+                // If word is already selected, deselect it
+                button.classList.remove("active");
+                selections.delete(word);
+            } else if (selections.size < maxSelections) {
+                // If not selected and below maxSelections, select it
+                button.classList.add("active");
+                selections.add(word);
+            }
+
+            // Update button state and prevent further selection if limit is reached
+            updateButtonState(cloudId);
+            if (selections.size === maxSelections) {
+                disableUnselectedButtons(cloudId);
+            } else {
+                enableAllButtons(cloudId);
+            }
+        }
+
+        function disableUnselectedButtons(cloudId) {
+            const cloud = document.getElementById(cloudId);
+            const buttons = cloud.querySelectorAll(".word-button:not(.active)");
+            buttons.forEach(button => {
+                button.style.pointerEvents = "none";
+                button.style.opacity = "0.5"; // Visual feedback for disabled buttons
+            });
+        }
+
+        function enableAllButtons(cloudId) {
+            const cloud = document.getElementById(cloudId);
+            const buttons = cloud.querySelectorAll(".word-button");
+            buttons.forEach(button => {
+                button.style.pointerEvents = "auto";
+                button.style.opacity = "1"; // Restore buttons
+            });
+        }
+
+        function switchToFatigue() {
+            document.getElementById("energy-screen").classList.add("hidden");
+            document.getElementById("fatigue-screen").classList.remove("hidden");
+        }
+
+        function submitResults() {
+            const energyWords = Array.from(energySelections);
+            const fatigueWords = Array.from(fatigueSelections);
+            const data = {
+                "energy_words": energyWords,
+                "fatigue_words": fatigueWords
+            };
+            jatos.startNextComponent(JSON.stringify(data));
+        }
+
+        jatos.onLoad(function () {
+
+            // choose 6 words
+            const words = [
+                // motivation/apathy
+                "Indecisive", "Demotivated", "Not enthusiastic", "Numb",
+                // "Passive", "Hesitant", "Demotivated", "Apathy", "Unenthusiastic", "Unenjoyable", "Asocial", "Joyless"
+
+                // cognitive/mental
+                "Not focussed", "Inattentive", "Slow thinking", "Mentally drained",
+                // "Slow", "Unfocussed", "Distracted", "Burnout", "Mental", "Unconcentrated",
+
+                // physical
+                "Drowsy", "Tired", "Sleepy", "Physically drained",
+                // "Exhausted", "Hunger", "Tired", "Drowsy", "Overworked", "Sleepy", "Physical",
+
+                // mood/affect
+                "Down", "Anxious", "Demoralised", "Irritable",
+                // "Sad", "Struggle", "Anxious", "Pessimism", "Agitation", "Low",
+
+                // catch
+                "Predictable", "Tall", "Novel", "Amateur"
+            ];
+
+            let wordPositions = [];
+
+            function randomizePositions() {
+                const cloudWidth = document.querySelector(".word-cloud").offsetWidth;
+                const cloudHeight = document.querySelector(".word-cloud").offsetHeight;
+                const buttonWidth = cloudWidth * 0.1;  // Adjust button size as a percentage of cloud width
+                const buttonHeight = cloudHeight * 0.1;  // Adjust button size as a percentage of cloud height
+
+                words.forEach(() => {
+                let x, y, overlap;
+                let attempts = 0;
+                do {
+                    overlap = false;
+                    x = Math.random() * (cloudWidth - buttonWidth);
+                    y = Math.random() * (cloudHeight - buttonHeight);
+
+                    // Check for overlap
+                    for (let pos of wordPositions) {
+                        if (Math.abs(pos.x - x) < buttonWidth && Math.abs(pos.y - y) < buttonHeight) {
+                            overlap = true;
+                            break;
+                        }
+                    }
+                    attempts++;
+                } while (overlap && attempts < 1000); // Limit attempts to 1000
+
+                // Place the button even if there is overlap after 1000 attempts
+                wordPositions.push({ x, y });
+            });
+
+            }
+
+            function generateButtons(cloudId) {
+                const cloud = document.getElementById(cloudId);
+                words.forEach((word, index) => {
+                    const button = document.createElement("div");
+                    button.className = "word-button";
+                    button.textContent = word;
+                    button.style.left = `${wordPositions[index].x}px`;
+                    button.style.top = `${wordPositions[index].y}px`;
+                    button.onclick = () => toggleSelection(button, cloudId);
+                    cloud.appendChild(button);
+                });
+            }
+
+            randomizePositions();
+            generateButtons("energy-cloud");
+            generateButtons("fatigue-cloud");
+
+            // Add event listeners for buttons
+            document.getElementById("next-button").addEventListener("click", switchToFatigue);
+            document.getElementById("submit-button").addEventListener("click", submitResults);
+        });
+    </script>
+</body>
+</html>

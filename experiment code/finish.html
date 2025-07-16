@@ -1,0 +1,53 @@
+<!-- =========================
+    Meta and External Resources
+========================= -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="css/styles.css" rel="stylesheet" type="text/css" /> <!-- costume page styling -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="jatos.js"></script>
+<!-- <script src="js/jquery.min.js"></script> -->
+
+<style>
+</style>
+
+<!-- =========================
+    Main Content Section
+========================= -->
+<div id="container1" class="container">
+    <br><br><br>
+    <h1>Thank you for completing the study!</h1><br>
+    <div style="text-align:middle"> 
+       <p style="font-size: 22px;">
+          Before we redirect you back to Prolific for your payment to be processed, we would appreciate any additional feedback on your experience: (any problems in running the experiment, interesting/boring, time it took to complete etc.)
+          <img src="./assets/img/feedback.jpg" alt="" style="max-width:20%; height:auto;"><br>
+       </p>        
+       <textarea id="feedback_textarea" placeholder="Type here"></textarea><br>
+    </div>
+    <button class="btn btn-success finish_btn" onclick="atFinish()">Finish</button>
+</div>
+
+<!-- =========================
+    Script Section
+========================= -->
+<script>
+    // Function to handle finish button click and submit feedback
+    atFinish = function(){
+       const fdbck_txt = document.getElementById("feedback_textarea");
+       const feedback = fdbck_txt.value;
+       const feedbackObject = { //to get to JSON
+          feedback_finish_screen: feedback 
+       };
+       const feedbackJsonString = "["+JSON.stringify(feedbackObject)+"]"; //add [], consistent
+       jatos.appendResultData(feedbackJsonString); //uplodate data
+       
+       let final_bonus = 0;
+       if (jatos.studySessionData.bonus_warning < 1) {
+          final_bonus = 2;
+       }
+       end_message = `Complete with bonus = ${final_bonus}. Bonus warning count: ${jatos.studySessionData.bonus_warning}`;
+       jatos.endStudy(true, end_message);
+    }
+</script>
+
+

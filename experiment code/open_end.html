@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- =========================
+         Meta & Styles Section
+         ========================= -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jatos.js"></script>
+    <link href="css/styles.css" rel="stylesheet" type="text/css" /> <!-- costume page styling -->
+
+    <title>Open end writing</title>
+    <style>
+        body {
+            background-color: rgb(221, 236, 246);
+        }
+    </style>
+</head>
+<body>
+    <!-- =========================
+         Instruction Section
+         ========================= -->
+    <div class="container" id="instructionContainer">
+        <h1>Final task</h1>
+        <p><i>If you need a last break, now would be good time.</i></p>
+        <p>In this final part of the experiment we ask you to <b>take a few minutes <br> to write about the upsetting event you thought of earlier.<br><br> Describe your thoughts on the event in as much detail as possible.</b><br> Let your words flow as if you were thinking out loud</b>. </p>
+        <img src="./assets/img/thinking.jpg" alt="thinking image" style="max-width:20%; height:auto;"><br>
+        <p>Aim to write the minimum required words, but feel free to write more if needed.<br> There is no right or wrong way to describe your experience — just focus on what comes to mind.</p><br> 
+        <button class="start-button" id="startButton">Start</button>
+    </div>
+
+    <!-- =========================
+         Writing Section
+         ========================= -->
+    <div class="container" id="writingContainer" style="display: none;">
+        <h1>Describe your thoughts on the event in as much detail as possible.</h1>
+        <img src="./assets/img/write.png" alt="rum image" style="max-width:12%; height:auto;"><br><br>
+        <textarea id="textEntry" placeholder="Start typing here..."></textarea>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <button class="start-button" id="finishButton" disabled>FINISHED</button>
+    </div>
+
+    <!-- =========================
+         Script Section
+         ========================= -->
+    <script>
+        // =========================
+        // JATOS OnLoad & Variables
+        // =========================
+        jatos.onLoad(function () {
+            let bonus_warn_n = 0;
+            let tab_change = false;
+            let n_tab_change = 0;
+            if (jatos.studySessionData && jatos.studySessionData.bonus_warning !== undefined) {
+                bonus_warn_n = jatos.studySessionData.bonus_warning;
+            }
+
+            // =========================
+            // Tab Change Detection
+            // =========================
+            document.addEventListener('visibilitychange', function () {
+                if (document.hidden) {
+                    // Increment the counter when the tab becomes hidden (user switched tabs)
+                    bonus_warn_n++;
+                    tab_change = true;
+                    n_tab_change++;
+                    console.log('Tab was changed, bonus_warn_n:', bonus_warn_n);
+                }
+            });
+
+            let nWords = 0;
+            const minWords = 100;  //100 Minimum words required before showing the continue button
+
+            const textEntry = document.getElementById("textEntry");
+            const startButton = document.getElementById("startButton");
+            const finishButton = document.getElementById("finishButton");
+            const instructionContainer = document.getElementById("instructionContainer");
+            const writingContainer = document.getElementById("writingContainer");
+
+            let progressBar = document.getElementById("progressBar");
+
+            // Array to store user responses & startTime for each sentence
+            let responses = [];
+            let startTime; 
+            let lastKeyTime;
+
+            // =========================
+            // Start Button Event
+            // =========================
+            // Event listener for the next button in the first instruction
+            startButton.addEventListener("click", function() {
+                instructionContainer.style.display = "none";  // Hide the instruction page
+                writingContainer.style.display = "block";  // Show the writing instruction page
+                startTime = Date.now();
+                lastKeyTime = startTime;
+            });
+
+            let keysPressed = [];  
+            let rts = []; 
+
+            // =========================
+            // Text Entry Event
+            // =========================
+            textEntry.addEventListener("keydown", function(currentWord) {
+                if (event.key !== "Shift") {  // ??????
+                    let keyPressed = event.key;  // Capture the key pressed
+                    let currentTime = Date.now();
+                    let rt = currentTime - lastKeyTime;
+                    lastKeyTime = currentTime;
+
+                    keysPressed.push(keyPressed);
+                    rts.push(rt);
+                }
+
+                if (event.key === " " || event.key === "Enter") {
+                    let currentWord = textEntry.value.trim();
+
+                    if (currentWord.length > 0) {
+                        if (currentWord.length > 2) {
+                            nWords += 1;
+                            // Calculate the progress as a percentage
+                            const progress = Math.min((nWords / minWords) * 100, 100);
+                            progressBar.style.width = progress + "%";
+                        }
+                        // Clear the textbox after each word
+                        textEntry.value = "";
+                    }
+                    // Show the continue button after reaching the minimum word count
+                    finishButton.disabled = nWords < minWords;
+                }
+            });
+
+            // =========================
+            // Finish Button Event
+            // =========================
+            // Handling "Continue" button click
+            finishButton.addEventListener("click", function() {
+                if (nWords < minWords) {
+                    // Alert user if they haven't typed enough words
+                    alert(`Please type at least ${minWords} words before continuing.`);
+                } else {
+                    saveData();
+                    jatos.studySessionData.bonus_warning = bonus_warn_n;
+                    jatos.submitResultData({
+                        responses: responses,
+                        tab_change: tab_change,
+                        n_tab_change: n_tab_change,
+                        bonus_warning: bonus_warn_n,
+                    }, 
+                    jatos.startNextComponent);
+                }
+            });
+
+            // =========================
+            // Save Data Function
+            // =========================
+            // Function to save intermediate progress to JATOS
+            function saveData() {
+                console.log("keysPressed", keysPressed);
+                console.log("rts", rts)
+                responses = { 
+                    timestamp: Date.now(),
+                    wordCount: nWords,
+                    keysPressed: keysPressed,
+                    rts: rts
+                };
+                jatos.appendResultData({ // Zwischenspeichern
+                    timestamp: Date.now(),
+                    wordCount: nWords,
+                    keysPressed: keysPressed,
+                    rts: rts
+                })
+            }
+        });
+    </script>
+</body>
+</html>
