@@ -1,0 +1,283 @@
+ID,group,medication,age,sex,ethnicity
+1,1,"Yes, I'm taking anti-depressants",35,Male,White
+2,1,"No",39,Female,White
+3,1,"No",29,Female,White
+4,1,"No",44,Male,White
+5,2,"No",39,Female,White
+6,2,"Yes, I'm taking anti-depressants",43,Female,White
+7,2,"No",38,Female,White
+8,2,"No",37,Male,White
+9,2,"No",36,Male,White
+10,2,"No",32,Male,White
+11,2,"No",44,Female,White
+12,1,"Yes, I'm taking anti-depressants",44,Female,White
+13,2,"Yes, I'm taking anti-depressants",43,Male,Mixed
+14,2,"No",39,Female,White
+15,2,"Yes, I'm taking a combination of these",37,Male,White
+16,2,"No",36,Female,Mixed
+17,2,"No",29,Female,White
+18,2,"No",43,Female,White
+19,2,"No",42,Female,White
+20,1,"No",31,Female,White
+21,2,"No",33,Male,White
+22,2,"No",43,Male,White
+23,1,"No",40,Female,White
+24,1,"No",26,Male,White
+25,1,"No",34,Female,Black
+26,2,"No",33,Female,White
+27,2,"No",22,Female,Black
+28,2,"Yes, I'm taking anti-anxiety medication",24,Female,White
+29,1,"No",23,Female,White
+30,2,"No",40,Female,White
+31,1,"Yes, I'm taking a combination of these",23,Female,White
+32,2,"No",19,Female,Asian
+33,2,"No",40,Male,White
+34,1,"No",35,Female,White
+35,2,"No",38,Female,White
+36,1,"No",27,Male,White
+37,2,"No",39,Female,White
+38,2,"No",45,Male,White
+39,1,"Yes, I'm taking anti-depressants",41,Male,White
+40,1,"Yes, I'm taking a combination of these",28,Female,White
+41,2,"No",45,Female,White
+42,1,"No",35,Male,White
+43,2,"No",43,Male,White
+44,2,"No",30,Female,White
+45,1,"No",32,Female,White
+46,2,"No",27,Female,Asian
+47,2,"No",31,Male,White
+48,1,"No",43,Female,White
+49,2,"No",30,Female,Asian
+50,1,"No",24,Male,Asian
+51,2,"No",35,Male,White
+52,2,"No",39,Female,White
+53,1,"No",33,Male,White
+54,1,"No",23,Female,Asian
+55,1,"No",39,Male,Other
+56,2,"No",42,Male,White
+57,1,"No",38,Male,White
+58,2,"No",22,Female,White
+59,1,"Yes, I'm taking a combination of these",30,Female,White
+60,1,"No",29,Female,White
+61,1,"No",38,Female,White
+62,2,"No",33,Male,White
+63,1,"No",34,Male,White
+64,1,"No",33,Female,White
+65,1,"No",44,Male,White
+66,2,"No",31,Female,White
+67,2,"Yes, I'm taking anti-anxiety medication",45,Female,White
+68,1,"No",27,Female,White
+69,2,"Yes, I'm taking anti-anxiety medication",37,Male,White
+70,1,"No",31,Male,White
+71,2,"No",32,Male,White
+72,2,"Yes, I'm taking anti-depressants",29,Male,White
+73,1,"No",36,Female,White
+74,1,"No",43,Male,White
+75,1,"Yes, I'm taking anti-depressants",37,Male,White
+76,2,"No",26,Male,Asian
+77,1,"No",43,Male,White
+78,2,"No",31,Male,White
+79,2,"No",29,Male,White
+80,2,"No",44,Male,White
+81,2,"No",37,Male,White
+82,2,"No",37,Male,White
+83,2,"No",35,Male,White
+84,1,"No",44,Male,White
+85,2,"No",32,Male,White
+86,1,"No",39,Male,White
+87,1,"No",25,Male,White
+88,2,"No",37,Female,White
+89,1,"No",22,Male,Asian
+90,1,"No",21,Male,Asian
+91,2,"No",37,Male,White
+92,1,"No",27,Male,Mixed
+93,1,"No",34,Male,White
+94,1,"No",28,Male,White
+95,2,"No",39,Female,White
+96,1,"No",28,Female,White
+97,2,"No",29,Female,White
+98,2,"No",41,Male,White
+99,1,"Yes, I'm taking anti-depressants",34,Female,White
+100,1,"No",29,Male,Mixed
+101,1,"No",25,Female,White
+102,2,"No",18,Male,White
+103,2,"No",32,Female,White
+104,1,"No",41,Female,White
+105,1,"No",28,Male,White
+106,1,"Yes, I'm taking anti-depressants",38,Male,White
+107,2,"No",32,Male,Black
+108,2,"No",35,Male,Black
+109,2,"No",45,Male,White
+110,1,"Yes, I'm taking anti-depressants",34,Male,White
+111,1,"No",27,Female,White
+112,2,"Yes, I'm taking anti-depressants",35,Male,Asian
+113,1,"No",27,Male,Other
+114,1,"No",34,Female,White
+115,2,"No",24,Male,Black
+116,1,"No",31,Female,White
+117,2,"No",38,Male,White
+118,1,"Yes, I'm taking anti-depressants",32,Female,Black
+119,1,"Yes, I'm taking anti-depressants",27,Male,White
+120,1,"No",33,Female,White
+121,2,"No",24,Female,White
+122,2,"Yes, I'm taking anti-depressants",32,Male,Black
+123,2,"Yes, I'm taking anti-depressants",35,Female,White
+124,2,"Yes, I'm taking anti-anxiety medication",32,Male,White
+125,1,"No",33,Female,Black
+126,2,"Yes, I'm taking anti-anxiety medication",19,Male,White
+127,1,"No",29,Male,White
+128,2,"No",31,Male,Black
+129,2,"No",35,Female,White
+130,2,"Yes, I'm taking anti-depressants",29,Male,Asian
+131,2,"Yes, I'm taking anti-anxiety medication",44,Female,White
+132,1,"No",34,Male,White
+133,2,"No",38,Male,White
+134,2,"No",34,Male,Black
+135,2,"No",32,Female,White
+136,2,"No",37,Female,White
+137,1,"No",36,Female,White
+138,2,"No",20,Female,Mixed
+139,1,"No",28,Male,White
+140,2,"Yes, I'm taking anti-depressants",29,Female,White
+141,2,"No",36,Male,Asian
+142,1,"Yes, I'm taking anti-anxiety medication",31,Male,White
+143,2,"No",26,Female,Black
+144,2,"No",45,Female,Asian
+145,1,"Yes, I'm taking anti-depressants",32,Female,White
+146,2,"No",41,Female,White
+147,1,"No",26,Male,Black
+148,1,"No",42,Male,Black
+149,1,"No",20,Male,Black
+150,2,"No",22,Male,Black
+151,1,"No",33,Female,White
+152,1,"No",26,Female,Black
+153,2,"No",24,Female,Asian
+154,1,"No",36,Male,White
+155,2,"No",27,Male,Mixed
+156,2,"No",22,Female,White
+157,1,"No",22,Female,Black
+158,2,"No",45,Male,White
+159,1,"No",22,Male,White
+160,1,"No",38,Male,Black
+161,2,"No",18,Female,Mixed
+162,1,"No",29,Male,White
+163,1,"No",22,Male,Asian
+164,2,"No",31,Female,Mixed
+165,2,"No",31,Male,White
+166,2,"Yes, I'm taking anti-depressants",32,Male,White
+167,1,"No",40,Female,Black
+168,2,"No",24,Male,White
+169,1,"No",44,Male,White
+170,2,"No",18,Male,White
+171,2,"No",21,Male,White
+172,1,"No",36,Male,Black
+173,2,"No",25,Female,Mixed
+174,2,"No",18,Male,Black
+175,2,"No",31,Male,White
+176,2,"Yes, I'm taking a combination of these",27,Female,White
+177,2,"No",31,Male,White
+178,1,"No",42,Male,White
+179,1,"No",36,Female,White
+180,1,"No",42,Female,White
+181,2,"No",42,Male,White
+182,1,"No",26,Male,White
+183,1,"No",28,Male,Black
+184,1,"No",28,Female,Asian
+185,1,"No",34,Female,Black
+186,1,"Yes, I'm taking anti-anxiety medication",35,Male,White
+187,2,"Yes, I'm taking anti-depressants",38,Male,Asian
+188,1,"No",30,Male,White
+189,2,"No",30,Male,Asian
+190,1,"No",42,Female,Black
+191,1,"No",30,Female,Black
+192,1,"No",32,Male,Mixed
+193,1,"Yes, I'm taking anti-depressants",23,Female,White
+194,1,"No",42,Female,Black
+195,2,"No",32,Female,Black
+196,2,"No",32,Female,Black
+197,2,"No",37,Male,White
+198,1,"No",31,Female,Black
+199,1,"No",31,Female,Black
+200,1,"Yes, I'm taking anti-depressants",28,Female,White
+201,2,"No",34,Female,Black
+202,2,"No",24,Female,Black
+203,2,"No",28,Male,Mixed
+204,1,"Yes, I'm taking anti-anxiety medication",34,Male,White
+205,2,"No",20,Male,White
+206,2,"No",35,Male,White
+207,1,"No",22,Female,White
+208,2,"No",43,Female,White
+209,1,"No",35,Female,White
+210,1,"No",33,Male,White
+211,2,"No",23,Male,White
+212,1,"No",24,Female,Asian
+213,1,"Yes, I'm taking anti-depressants",20,Female,Black
+214,2,"Yes, I'm taking anti-depressants",30,Female,White
+215,2,"No",27,Male,Black
+216,2,"No",40,Female,Asian
+217,1,"Yes, I'm taking anti-depressants",22,Male,White
+218,1,"No",21,Male,Black
+219,2,"No",28,Male,White
+220,2,"No",21,Female,White
+221,2,"Yes, I'm taking anti-depressants",26,Female,Black
+222,2,"No",28,Female,White
+223,2,"Yes, I'm taking anti-depressants",39,Female,White
+224,1,"No",21,Female,Black
+225,1,"No",26,Male,Black
+226,2,"No",26,Female,White
+227,1,"No",18,Female,White
+228,1,"No",31,Male,Black
+229,1,"No",24,Female,White
+230,2,"No",37,Male,White
+231,1,"No",27,Male,Mixed
+232,2,"No",39,Male,White
+233,2,"No",30,Female,White
+234,1,"Yes, I'm taking anti-anxiety medication",25,Male,Black
+235,1,"Yes, I'm taking a combination of these",30,Male,Black
+236,2,"No",34,Male,Black
+237,1,"No",29,Male,White
+238,1,"Yes, I'm taking anti-depressants",30,Female,Black
+239,1,"No",31,Female,White
+240,2,"No",20,Male,Black
+241,1,"No",28,Female,Black
+242,1,"Yes, I'm taking anti-depressants",21,Female,White
+243,1,"Yes, I'm taking anti-depressants",31,Male,Black
+244,1,"No",31,Male,White
+245,2,"Yes, I'm taking anti-depressants",24,Male,White
+246,1,"No",38,Female,Asian
+247,1,"No",43,Female,White
+248,1,"No",29,Female,White
+249,1,"No",33,Female,Black
+250,2,"No",33,Male,White
+251,1,"No",45,Male,White
+252,1,"No",27,Male,Black
+253,1,"Yes, I'm taking a combination of these",31,Female,White
+254,2,"No",32,Male,White
+255,1,"Yes, I'm taking anti-anxiety medication",43,Female,White
+256,2,"No",28,Male,Asian
+257,2,"No",33,Male,White
+258,1,"Yes, I'm taking anti-depressants",42,Male,White
+259,2,"Yes, I'm taking anti-anxiety medication",34,Male,Black
+260,1,"No",32,Male,Black
+261,2,"No",45,Male,Black
+262,2,"Yes, I'm taking anti-depressants",23,Female,Asian
+263,2,"Yes, I'm taking anti-depressants",28,Female,Other
+264,2,"Yes, I'm taking anti-anxiety medication",34,Female,White
+265,2,"No",32,Male,Black
+266,1,"No",29,Male,Asian
+267,2,"Yes, I'm taking anti-depressants",22,Female,White
+268,1,"No",31,Male,Black
+269,2,"No",40,Female,Asian
+270,2,"No",38,Female,White
+271,1,"No",25,Male,Black
+272,1,"Yes, I'm taking anti-anxiety medication",30,Male,Mixed
+273,2,"No",45,Female,Black
+274,1,"No",39,Male,White
+275,1,"Yes, I'm taking anti-depressants",33,Male,White
+276,1,"No",28,Female,Black
+277,2,"No",32,Male,Black
+278,1,"No",28,Male,Black
+279,1,"Yes, I'm taking anti-anxiety medication",35,Male,Asian
+280,1,"No",25,Male,Black
+281,1,"Yes, I'm taking anti-depressants",25,Male,Black
+282,1,"No",26,Male,White
