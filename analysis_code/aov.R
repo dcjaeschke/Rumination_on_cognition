@@ -41,8 +41,8 @@ afex_options(type = "III")  # Type III sums (balanced with contrasts)
 
 ### a) Load data
 
-trial_path <- "data/nback.csv"
-qnr_path   <- "data/questionnaires.csv"
+trial_path <- "./data/nback.csv"
+qnr_path   <- "./data/questionnaires.csv"
 
 nback_df <- read_csv(trial_path, show_col_types = FALSE)
 qnr_df   <- read_csv(qnr_path,   show_col_types = FALSE)
