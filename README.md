@@ -7,9 +7,9 @@ This repository provides all code, experimental materials, and analysis scripts 
 ---
 ## Repository Overview
 
-- **/experiment code/**: Source code for experiment including the n-back task and rumination induction (JavaScript, HTML, CSS)
-- **/data/**:  dataset (de-identified)
-- **/analysis code/**: R scripts for statistical analysis and figure generation
+- **experiment code**: Source code for experiment including the n-back task and rumination induction (JavaScript, HTML, CSS)
+- **data**:  dataset (de-identified)
+- **analysis code**: R scripts for statistical analysis and figure generation
 
 ## Overview
 
@@ -32,4 +32,4 @@ Rumination, common in psychiatric disorders, may impair cognitive performance by
 - Task and induction design in JavaScript, HTML, CSS
 - Statistical analysis in R
 
-[Preprint Link](#) *[(add your link here)](https://osf.io/preprints/psyarxiv/53qga_v1)*
+Preprint Link: *[(https://osf.io/preprints/psyarxiv/53qga_v1)]*
