@@ -26,10 +26,4 @@ Rumination, common in psychiatric disorders, may impair cognitive performance by
 - Performance deficits were mediated by cognitive interference; effort perception was not, suggesting distinct mechanisms.
 - Exploratory analyses indicated rumination may specifically impair inhibitory control (increased false alarms).
 
-## Skills & Tools
-
-- Project development, pre-registration, and online data collection
-- Task and induction design in JavaScript, HTML, CSS
-- Statistical analysis in R
-
 Preprint Link: *[(https://osf.io/preprints/psyarxiv/53qga_v1)]*
