@@ -11,7 +11,7 @@ This repository provides all code, experimental materials, and analysis scripts 
 - **data**:  dataset (de-identified)
 - **analysis code**: R scripts for statistical analysis and figure generation
 
-## Overview
+## Project Overview
 
 Rumination, common in psychiatric disorders, may impair cognitive performance by interfering with task execution. This project tested whether an induced ruminative state impairs working memory and increases perceived effort due to cognitive interference.
 
