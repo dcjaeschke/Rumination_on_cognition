@@ -11,7 +11,7 @@ This repository provides all code, experimental materials, and analysis scripts 
 - **data**:  dataset (de-identified)
 - **analysis code**: R scripts for statistical analysis and figure generation
 
-## Overview
+## Project Overview
 
 Rumination, common in psychiatric disorders, may impair cognitive performance by interfering with task execution. This project tested whether an induced ruminative state impairs working memory and increases perceived effort due to cognitive interference.
 
@@ -25,11 +25,5 @@ Rumination, common in psychiatric disorders, may impair cognitive performance by
 - Rumination impaired working memory and increased perceived cognitive effort, regardless of cognitive load, trait rumination, or depression severity.
 - Performance deficits were mediated by cognitive interference; effort perception was not, suggesting distinct mechanisms.
 - Exploratory analyses indicated rumination may specifically impair inhibitory control (increased false alarms).
-
-## Skills & Tools
-
-- Project development, pre-registration, and online data collection
-- Task and induction design in JavaScript, HTML, CSS
-- Statistical analysis in R
 
 Preprint Link: *[(https://osf.io/preprints/psyarxiv/53qga_v1)]*
